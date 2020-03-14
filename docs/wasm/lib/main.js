@@ -47,6 +47,7 @@ const editorContainer = document.querySelector(".container");
 const filePickerContainer = document.querySelector(".filelist-container");
 const loadFileButton = document.querySelector(".js-load-file-button");
 const assembleOutput = document.querySelector("#assemble-output");
+const editorButton = document.querySelector(".js-editor-button");
 
 const DISPLAY_UNCHANGED = -1;
 const DISPLAY_EDITOR = 1;
@@ -597,6 +598,9 @@ window.main_init = async () => {
 
 	await buildBios(cw);
 	route.onload();
+	editorButton.addEventListener("click", async () => {
+		route.gotoSection("editor");
+	});
 
 	loadFileButton.addEventListener("click", async () => {
 		route.gotoSection("filelist");
