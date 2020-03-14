@@ -24,6 +24,6 @@ rm -rf ${DEST}/asmjs
 rm -rf ${DEST}/wasm
 
 build ${DEST}/wasm wasm
-#build ${DEST}/asmjs asmjs
+build ${DEST}/asmjs asmjs
 
 http-server dist/wasm/
