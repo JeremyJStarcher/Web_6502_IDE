@@ -1,0 +1,6 @@
+
+#!/bin/sh
+
+rm -rf wasm/ asmjs/
+cp ../dist/wasm/ . -Rv
+cp ../dist/asmjs/ . -Rv

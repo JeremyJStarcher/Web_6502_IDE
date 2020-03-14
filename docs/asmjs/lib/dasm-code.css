@@ -447,6 +447,7 @@ section.popup-container {
   color: var(--c64-yellow);
   border: 2px solid var(--c64-lightblue);
   padding: 1em;
+  max-width: 40em;
 }
 
 section a {
@@ -488,4 +489,11 @@ a:visited {
 
 #assemble-output a {
   color: var(--c64-white);
+}
+
+.error-no-wasm {
+  background: var(--c64-red);
+  color: var(--c64-white);
+  border: 2px solid var(--c64-white);
+  overflow: auto;
 }

@@ -192,8 +192,6 @@
 		};
 	</script>
 
-	<script type="module" src="lib/main.js"></script>
-	<script src="v6502.js"></script>
 
 	<section class="popup-container" data-section-id="main">
 		<div>
@@ -202,7 +200,20 @@
 &nbsp;/&nbsp;__&nbsp;\/___&nbsp;\/&nbsp;/&nbsp;/&nbsp;/_/&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;//&nbsp;/&nbsp;/&nbsp;/&nbsp;__/&nbsp;&nbsp;&nbsp;
 /&nbsp;/_/&nbsp;/___/&nbsp;/&nbsp;/_/&nbsp;/&nbsp;__/&nbsp;&nbsp;&nbsp;_/&nbsp;//&nbsp;/_/&nbsp;/&nbsp;/___&nbsp;&nbsp;&nbsp;
 \____/_____/\____/____/&nbsp;&nbsp;/___/_____/_____/&nbsp;&nbsp;&nbsp;</pre>
-			<pre class="main-logo">6502 IDE</pre>
+			<pre class="main-logo">6502 IDE <span class="js-wasm-mode"></span></pre>
+
+			<div style="display: none" class="js-error-no-wasm error-no-wasm">
+				<pre class="error-icon" style="float: left; width: 5em;"></pre>
+				<p style="float: left; width: 20em">
+					<strong>Warning:</strong> You are trying to use the WASM version of
+					this program, but your browser does not support WASM.
+					<br>
+					<br>
+					<a href="../asm">Use the ASM.js version instead.</a>
+				</p>
+			</div>
+
+			<div style="clear: both"></div>
 
 			<div class="button-row">
 				<button class="js-load-file-button">LOAD DEMO</button>
@@ -214,6 +225,11 @@
 			</div>
 		</div>
 	</section>
+
+	<script type="module" src="lib/main.js"></script>
+	<script src="v6502.js"></script>
+	<script src="lib/wasm-mode.js"></script>
+	<script src="lib/wasmdetect.js"></script>
 </body>
 
 </html>

@@ -18,6 +18,8 @@ function build {
     cp sources/web/font/*.woff ./${1}/font
     cp sources/web_dasm/dasm-exe* ${1}
     cp sources/v6502/v6502* ${1}
+
+    echo "window.WASM_FLAG='${2}' === 'wasm';" >> ${1}/lib/wasm-mode.js
 }
 
 rm -rf ${DEST}/asmjs

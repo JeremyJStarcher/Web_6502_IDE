@@ -19,53 +19,17 @@
 &nbsp;/&nbsp;__&nbsp;\/___&nbsp;\/&nbsp;/&nbsp;/&nbsp;/_/&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;//&nbsp;/&nbsp;/&nbsp;/&nbsp;__/&nbsp;&nbsp;&nbsp;
 /&nbsp;/_/&nbsp;/___/&nbsp;/&nbsp;/_/&nbsp;/&nbsp;__/&nbsp;&nbsp;&nbsp;_/&nbsp;//&nbsp;/_/&nbsp;/&nbsp;/___&nbsp;&nbsp;&nbsp;
 \____/_____/\____/____/&nbsp;&nbsp;/___/_____/_____/&nbsp;&nbsp;&nbsp;</pre>
-			<pre class="main-logo">6502 IDE</pre>
+			<pre class="main-logo">6502 IDE></pre>
 
-			<div class="button-row">
-				<button id="runwasm">WASM Version (Faster)</button>
-				<button id="runasm">JavaScript version (More compatible)</button>
-			</div>
+			<div class="js-wasm-redirect"></div>
 
-			<div id="wasm-no" style="display: none">
-				<p>
-					Your browser does not support WASM. This could be because the browser
-					is out of date or because security features do not allow WASM to run.
-				</p>
-
-				<p>Have no fear. The JavaScript version has the same interface
-					and the same features. It might be a bit slower, however.
-				</p>
-
-
-			</div>
 			<div class="button-row">
 				<a href="about.html" target="_blank">About the 6502 Emulator</a>
 			</div>
 		</div>
 	</section>
 
-	<script>
-		const isWasmSupported = (() => {
-			try {
-				if (typeof WebAssembly === "object"
-					&& typeof WebAssembly.instantiate === "function") {
-					const module = new WebAssembly.Module(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
-					if (module instanceof WebAssembly.Module)
-						return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
-				}
-			} catch (e) {
-			}
-			return false;
-		})();
-
-		alert(isWasmSupported);
-
-		if (!isWasmSupported) {
-			document.querySelector("#runwasm").disabled = true;
-			document.querySelector("#wasn-no").display = "";
-		}
-
-	</script>
+	<script src="wasm/lib/wasmdetect.js"></script>
 </body>
 
 </html>
