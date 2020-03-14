@@ -56,6 +56,9 @@ const showSection = (sectionId => {
 });
 
 const gotoSection = (section) => {
+    showSection(section);
+    return;
+
     if (section) {
         const state = {
             "section": section,
