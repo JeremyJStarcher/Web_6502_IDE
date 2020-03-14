@@ -1,0 +1,29 @@
+#!/bin/bash
+
+DEST=dist
+
+function build {
+    echo $1 
+
+    mkdir -p ${1}
+    mkdir -p ${1}/font
+    mkdir ${0}
+
+    (cd sources/web_dasm && make clean ${2})
+    (cd sources/v6502 && make clean ${2})
+
+    cp sources/web/*.html ./${1}/
+    cp sources/web/*.ico ./${1}/
+    cp sources/web/lib  ./${1}/ -R
+    cp sources/web/font/*.woff ./${1}/font
+    cp sources/web_dasm/dasm-exe* ${1}
+    cp sources/v6502/v6502* ${1}
+}
+
+rm -rf ${DEST}/asmjs
+rm -rf ${DEST}/wasm
+
+build ${DEST}/wasm wasm
+#build ${DEST}/asmjs asmjs
+
+http-server dist/wasm/
