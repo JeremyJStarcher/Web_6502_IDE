@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>About the 6502 IDE</title>
+
+	<link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+	<link rel="stylesheet" href="lib/dasm-code.css">
+</head>
+
+<body class="section">
+	<section class="page">
+		<div class="page-contents">
+			<h1>About the <i>6502 IDE</i></h1>
+
+			<p>The 6502 IDE started off as an experiment to work with WASM and, more
+				directly, the <em>emscripten</em> project.
+			</p>
+
+			<p>It was directly inspired by <a href="http://6502asm.com/">
+					http://6502asm.com/</a>. My original goal was to replace the compiler
+				with one more powerful as I wanted a more flexible playground to experiment
+				with. I soon saw that it was very easy to replace the 6502 Emulator
+				as well.
+			</p>
+
+			<h2>Meet the assembler: DASM</h2>
+			<p>I choose <a href="https://dasm-assembler.github.io/">dasm</a>
+				as my assembler of choice, mostly because I have worked with it on other projects and was
+				quite comfortable with the tool.
+			</p>
+
+			<p>The <code>dasm</code> source is completely original
+				with the sole exception of adding a <code>web_main</code>
+				function that allows me to call main. I hope, with a bit more
+				experience, I'll be able to get rid of <code>web_main</code>.</p>
+
+			<p>I do use a custom makefile, mostly to set some
+				<code>emscripten</code> specific things.</p>
+
+			<h2>Meet the 6502: fake6502</h2>
+			<p>
+				I use the excellent <code>fake6502</code>,
+				<em>(c)2011 Mike Chambers (miker00lz@gmail.com)</em>
+				TThis is another package I have experience with, and it
+				has a good reputation in the community. The main
+				module took no modification to compile, but I did have
+				to include a few helper functions.
+			</p>
+
+			<h2>The result</h2>
+			<p></p>The result is the first release of <code>6502 IDE</code></p>
+			<p>While the compiler is <em>slightly</em> slower than
+				the origional javascript compiler, it is still very
+				quick. The compiler is far more powerful than any compiler
+				I have found on a web-based 6502 emulator.</p>
+			<p>The origional JavaScript emulator is extremely slow and is
+				heavily affected by the speed of the computer. This made most
+				of the demos run at an OK speed, but some of the games may have been
+				too fast.</p>
+			<p>The new emulator runs somewhere around 100x faster. As
+				a result, the <code>6502 IDE</code> allows you to set a
+				processor speed used for the emulation.
+			</p>
+		</div>
+	</section>
+</body>
+
+</html>

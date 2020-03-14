@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en-us">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>6502 IDE</title>
+
+	<link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+	<style>
+	</style>
+
+
+	<script src="lib/codemirror.js"></script>
+	<link rel="stylesheet" href="lib/codemirror.css">
+	<link rel="stylesheet" href="lib/dasm-code.css">
+
+</head>
+
+<body>
+	<section class="filelist-container" data-section-id="filelist">
+		<div>
+			<ul class="filelist"> </ul>
+		</div>
+	</section>
+
+	<section data-section-id="editor">
+		<div class="container" data-section-id="editor">
+			<div class="header toolbar">
+				<div class="loading-popup">
+					<figure style="overflow:visible;" id="spinner">
+						<div class="spinner"></div>
+						<center style="margin-top:0.5em"><strong>emscripten</strong></center>
+					</figure>
+					<div class="emscripten" id="status">Downloading...</div>
+					<div class="emscripten">
+						<progress value="0" max="100" id="progress" hidden=1></progress>
+					</div>
+				</div>
+				<div>
+					<button class="js-go-button">GO!</button>
+					<button class="js-compile-button">Assemble</button>
+					<button class="js-run-button">Run</button>
+					<button class="js-reset-button">Reset</button>
+					<button class="js-pause-button">Pause</button>
+					<button style="display: none" class="js-flicker-button">&#x25b6; Flicker</button>
+					<button class="js-step-button">Step</button>
+				</div>
+				<div>
+					<button class="js-show-code">Code</button>
+					<button class="js-show-graphics">Graphics</button>
+				</div>
+			</div>
+			<div class="sidebar">sidebar
+				<div class="header">
+					CPU SPEED
+				</div>
+				<div class="speedlist"></div>
+			</div>
+			<div class="w6502">
+				<div class="header-6502">6502 STATUS</div>
+				<div><span class="label">PC: </span><span class="value" id="w6502-pc">$??</span></div>
+				<div><span class="label">A: </span><span class="value" id="w6502-rega">$??</span></div>
+				<div><span class="label">X: </span><span class="value" id="w6502-regx">$??</span></div>
+				<div><span class="label">Y: </span><span class="value" id="w6502-regy">$??</span></div>
+
+				<div style="display: none">
+					<span class="value" id="w6502-opcode">$??</span>
+					<span class="value" id="w6502-byte1">$??</span>
+					<span class="value" id="w6502-byte2">$??</span>
+				</div>
+
+				<div><span class="label">SP: </span><span class="value" id="w6502-sp">$??</span></div>
+				<div><span class="line" style="word-wrap: break-word" id="">NV&nbsp;BDIZC</span></div>
+				<div><span class="line" id="w6502-flags">????????</span></div>
+			</div>
+			<div class="content-1 editor-panel">
+				<textarea class="editor"></textarea>
+				<canvas class="graphics-out"></canvas>
+			</div>
+			<div class="footer">
+				<textarea style="display:none" class="emscripten" id="output" readonly></textarea>
+				<div id="assemble-output"></div>
+			</div>
+		</div>
+	</section>
+
+	<div style="display: none">
+		<div class="emscripten_border">
+			<canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+		</div>
+
+		<div class="emscripten">
+			<input type="checkbox" id="resize">Resize canvas
+			<input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer
+			&nbsp;&nbsp;&nbsp;
+			<input type="button" value="Fullscreen" onclick="Module.requestFullscreen(document.getElementById('pointerLock').checked, 
+					    document.getElementById('resize').checked)">
+		</div>
+	</div>
+
+	<script type='text/javascript'>
+		const statusElement = document.getElementById('status');
+		const progressElement = document.getElementById('progress');
+		const spinnerElement = document.getElementById('spinner');
+
+		let dasmShellEvents = 2;
+
+		const runDasmShellEvent = () => {
+			dasmShellEvents--;
+			if (dasmShellEvents === 0) {
+				window.main_init();
+			}
+		};
+		window.addEventListener("load", () => {
+			runDasmShellEvent();
+		});
+
+		var Module = {
+			onRuntimeInitialized: function () {
+				runDasmShellEvent();
+			},
+			preRun: [],
+			postRun: [],
+			print: (function () {
+				var element = document.getElementById('output');
+				if (element) element.value = ''; // clear browser cache
+				return function (text) {
+					if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+					// These replacements are necessary if you render to raw HTML
+					//text = text.replace(/&/g, "&amp;");
+					//text = text.replace(/</g, "&lt;");
+					//text = text.replace(/>/g, "&gt;");
+					//text = text.replace('\n', '<br>', 'g');
+					console.log(text);
+					if (element) {
+						element.value += text + "\n";
+						element.scrollTop = element.scrollHeight; // focus on bottom
+					}
+				};
+			})(),
+			printErr: function (text) {
+				if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+				console.error(text);
+			},
+			canvas: (function () {
+				var canvas = document.getElementById('canvas');
+
+				// As a default initial behavior, pop up an alert when webgl context is lost. To make your
+				// application robust, you may want to override this behavior before shipping!
+				// See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+				canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+				return canvas;
+			})(),
+			setStatus: function (text) {
+				if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+				if (text === Module.setStatus.last.text) return;
+				var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+				var now = Date.now();
+				if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+				Module.setStatus.last.time = now;
+				Module.setStatus.last.text = text;
+				if (m) {
+					text = m[1];
+					progressElement.value = parseInt(m[2]) * 100;
+					progressElement.max = parseInt(m[4]) * 100;
+					progressElement.hidden = false;
+					spinnerElement.hidden = false;
+				} else {
+					progressElement.value = null;
+					progressElement.max = null;
+					progressElement.hidden = true;
+					if (!text) spinnerElement.hidden = true;
+				}
+				statusElement.innerHTML = text;
+			},
+			totalDependencies: 0,
+			monitorRunDependencies: function (left) {
+				this.totalDependencies = Math.max(this.totalDependencies, left);
+				Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+			}
+		};
+		Module.setStatus('Downloading...');
+		window.onerror = function () {
+			Module.setStatus('Exception thrown, see JavaScript console');
+			spinnerElement.style.display = 'none';
+			Module.setStatus = function (text) {
+				if (text) Module.printErr('[post-exception status] ' + text);
+			};
+		};
+	</script>
+
+	<script type="module" src="lib/main.js"></script>
+	<script src="v6502.js"></script>
+
+	<section class="popup-container" data-section-id="main">
+		<div>
+			<pre class="main-logo">&nbsp;&nbsp;&nbsp;_____&nbsp;__________&nbsp;___&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;________&nbsp;&nbsp;______
+&nbsp;&nbsp;/&nbsp;___//&nbsp;____/&nbsp;__&nbsp;\__&nbsp;\&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;&nbsp;_/&nbsp;__&nbsp;\/&nbsp;____/
+&nbsp;/&nbsp;__&nbsp;\/___&nbsp;\/&nbsp;/&nbsp;/&nbsp;/_/&nbsp;/&nbsp;&nbsp;&nbsp;&nbsp;/&nbsp;//&nbsp;/&nbsp;/&nbsp;/&nbsp;__/&nbsp;&nbsp;&nbsp;
+/&nbsp;/_/&nbsp;/___/&nbsp;/&nbsp;/_/&nbsp;/&nbsp;__/&nbsp;&nbsp;&nbsp;_/&nbsp;//&nbsp;/_/&nbsp;/&nbsp;/___&nbsp;&nbsp;&nbsp;
+\____/_____/\____/____/&nbsp;&nbsp;/___/_____/_____/&nbsp;&nbsp;&nbsp;</pre>
+			<pre class="main-logo">6502 IDE</pre>
+
+			<div class="button-row">
+				<button class="js-load-file-button">LOAD DEMO</button>
+				<button>SAVE</button>
+				<button>EDIT</button>
+			</div>
+			<div class="button-row">
+				<a href="about.html" target="_blank">About the 6502 Emulator</a>
+			</div>
+		</div>
+	</section>
+</body>
+
+</html>
