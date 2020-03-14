@@ -61,10 +61,13 @@
             warning.style.display = "";
         }
     }
-    document.querySelector(".error-icon").innerHTML = `...._....
+    const warningIcon = document.querySelector(".error-icon");
+    if (warningIcon) {
+    warningIcon.innerHTML = `...._....
 .../.\\...
 ../.|.\\..
 ./..|..\\.
 /___o___\\`.replace(/\./g, "&nbsp;");
+    };
 
 })();
