@@ -40,12 +40,12 @@
         }
 
         document.querySelector("#runwasm").addEventListener("click", () => {
-            window.location = "/wasm";
+            window.location = "wasm/";
         });
 
 
         document.querySelector("#runasm").addEventListener("click", () => {
-            window.location = "/asmjs";
+            window.location = "asmjs/";
         });
     }
 
