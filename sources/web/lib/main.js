@@ -325,6 +325,8 @@ const loadDasmIFrame = async () => {
 };
 
 const assemble = async (cw, filename, src) => {
+	route.gotoSection("wait");
+
 	const sendmessagereply = await common.sendMessageAwaitReply(cw, {
 		action: 'writeFile',
 		filename: `${filename}.asm`,
@@ -367,6 +369,8 @@ const assemble = async (cw, filename, src) => {
 	}).join("<br>");
 
 	fillScreen();
+
+	route.gotoSection("editor");
 
 	return assembleResult;
 };
