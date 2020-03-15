@@ -14,25 +14,8 @@ static uint8_t lastMode;
 
 #define SYSMAGICADDRESS (0xFFF0)
 
-int did_init = 0;
-
 uint8_t read6502(uint16_t address)
 {
-	if (address == 0x00FE)
-	{
-		const int lower = 0;
-		const int upper = 255;
-		if (did_init == 0)
-		{
-			srand(time(0));
-			did_init = 1;
-		}
-		int num = (rand() %
-				   (upper - lower + 1)) +
-				  lower;
-		return num;
-	}
-
 	return ram[address];
 }
 

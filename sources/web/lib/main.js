@@ -87,6 +87,8 @@ let [m6502pc,
 const write6502 = Module.cwrap('write6502', 'void', ['number']);
 const read6502 = Module.cwrap('read6502', 'number', ['void']);
 
+let rand = (a, b) /* min, max inclusive */ => a + (b - a + 1) * crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32 | 0
+
 const writeScreenAddress = (address, value) => {
 	if (address < 0x200 || address > 0x05FF) {
 		return;
@@ -250,6 +252,7 @@ const create6502 = (lineMappings) => {
 	};
 
 	const executeInstruction = () => {
+		write6502(0xFE, rand(0, 255));
 		dataHeap.set(new Uint8Array(cpu_status_data.buffer));
 		const oldpc = m6502pc;
 
