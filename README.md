@@ -30,6 +30,7 @@ and interfaing with `wasm.`
 * Save!  Yes, I want to be able to save the code I am working on. Save to browser storage with the chance to download my library a a `zip` file.
 * Add text output.  Set aside some memory as a frame buffer and let text I/O working.  Then I'd like to port one of the versions of BASIC over.
 * Convert it to an application using Electron or some similiar tool.
+* Atari 2600 emulator.  Code and deploy directly to an Atari 2600 machine.  I may consider other 6502 based machines if they are available.
 
 ## Credits
 

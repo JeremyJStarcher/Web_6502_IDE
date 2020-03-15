@@ -1,7 +1,7 @@
 @import url("normalize.css");
+@import url("cm-syntax.css");
 
 /* Based on the theme at http://bonsaiden.github.com/JavaScript-Garden */
-
 
 /* based on the theme midnight in the std distro */
 
@@ -22,23 +22,23 @@
   --c64-lightgreen: #AAFF66;
   --c64-lightblue: #0088FF;
   --c64-lightgrey: #BBBBBB;
-  --editor-background-color: var(--c64-darkgrey);
-  --editor-text-color: var(--c64-white);
-  --status-background-color: var(--c64-darkgrey);
-  --status-text-color: var(--c64-lightgrey);
-  --gutter-background-color: var(--c64-black);
-  --gutter-text-color: var(--c64-grey);
-  --output-background-color: var(--c64-blue);
-  --output-text-color: var(--c64-yellow);
+
+  --panel-border-color: var(--c64-grey);
+  --panel-border-width: 2px;
+  --panel-background-color: var(--c64-darkgrey);
+  --panel-text-color: var(--c64-white);
+
   --button-background-color: var(--c64-red);
   --button-text-color: var(--c64-white);
-  --sidebar-background-color: var(--c64-brown);
-  --sidebar-text-color: var(--c64-yellow);
-}
 
-@font-face {
-  font-family: 'PixelOperatorMono';
-  src: url('../font/PixelOperatorMono.woff') format('woff');
+  --editor-activeline-color: var(--c64-lightgreen);
+  --editor-activeline-background: var(--c64-black);
+  --editor-activeline-gutter: var(--c64-black);
+
+  --editor-background-color: var(--c64-darkgrey);
+  --editor-text-color: var(--c64-white);
+  --editor-gutter-background-color: var(--c64-black);
+  --editor-gutter-text-color: var(--c64-cyan);
 }
 
 .active-lines,
@@ -46,16 +46,18 @@
   width: 0.8em;
 }
 
+@font-face {
+  font-family: 'PixelOperatorMono';
+  src: url('../font/PixelOperatorMono.woff') format('woff');
+}
+
 body,
-textarea,
-button,
 pre,
 .CodeMirror-linenumber,
 .CodeMirror-line {
   font-family: 'PixelOperatorMono', 'Courier New', Courier, monospace !important;
+  /* letter-spacing: -2px !important;  */
   letter-spacing: 0px;
-  /* -2px !important; */
-  /* font-size: 15px !important; */
 }
 
 .loading-popup {
@@ -76,9 +78,6 @@ pre,
 div.emscripten {
   text-align: center;
 }
-
-
-/* the canvas *must not* have any border or padding, or mouse coords will be wrong */
 
 canvas.emscripten {
   border: 0px none;
@@ -137,6 +136,34 @@ canvas.emscripten {
   }
 }
 
+.CodeMirror-gutters {
+  background-color:var(--editor-gutter-background-color) !important;
+  color: var(--editor-gutter-text-color) !important;
+  border-left: var(--panel-border-width) solid var(--panel-border-color);
+  border-right: 0;
+}
+
+.CodeMirror-activeline {
+  color: var(--editor-activeline-color);
+}
+
+.CodeMirror-activeline-background {
+  background:var(--editor-activeline-background) !important;
+}
+.CodeMirror-activeline-gutter {
+  background:var(--editor-activeline-gutter) !important;
+  color:var(--editor-gutter-text-color) !important;
+  border-left: var(--panel-border-width) solid var(--panel-border-color);
+}
+.CodeMirror-linenumber {
+  color:var(--editor-gutter-text-color) !important;
+}
+
+.cm-s-dasm .CodeMirror-cursor {
+  border-left: .25em solid var(--c64-lightred);
+}
+
+
 button {
   background: var(--button-background-color);
   color: var(--button-text-color);
@@ -151,128 +178,12 @@ button[disabled] {
   color: var(--c64-white);
 }
 
-
-/*<!--activeline-->*/
-
-.cm-s-dasm .CodeMirror-activeline-background {
-  background: #253540;
-}
-
-.cm-s-dasm.CodeMirror {
-  background: var(--editor-background-color);
-  color: var(--editor-text-color);
-  height: 100%;
-  width: 100%;
-}
-
-.cm-s-dasm div.CodeMirror-selected {
-  background: #314D67;
-}
-
-.cm-s-dasm .CodeMirror-line::selection,
-.cm-s-dasm .CodeMirror-line>span::selection,
-.cm-s-dasm .CodeMirror-line>span>span::selection {
-  background: rgba(49, 77, 103, .99);
-}
-
-.cm-s-dasm .CodeMirror-line::-moz-selection,
-.cm-s-dasm .CodeMirror-line>span::-moz-selection,
-.cm-s-dasm .CodeMirror-line>span>span::-moz-selection {
-  background: rgba(49, 77, 103, .99);
-}
-
-.cm-s-dasm .CodeMirror-guttermarker {
-  color: white;
-}
-
-.cm-s-dasm .CodeMirror-guttermarker-subtle {
-  color: #d0d0d0;
-}
-
-.cm-s-dasm .CodeMirror-linenumber {
-  color: #D0D0D0;
-}
-
-.cm-s-dasm .CodeMirror-linenumber,
-.cm-s-dasm .CodeMirror-gutters {
-  background: var(--gutter-background-color);
-  color: var(--gutter-text-color);
-}
-
-.cm-s-dasm .CodeMirror-cursor {
-  border-left: 15px solid #F8F8F0;
-}
-
-.cm-s-dasm span.cm-comment {
-  color: #428BDD;
-}
-
-.cm-s-dasm span.cm-atom {
-  color: #AE81FF;
-}
-
-.cm-s-dasm span.cm-number {
-  color: #D1EDFF;
-}
-
-.cm-s-dasm span.cm-property,
-.cm-s-dasm span.cm-attribute {
-  color: #A6E22E;
-}
-
-.cm-s-dasm span.cm-keyword {
-  color: #E83737;
-}
-
-.cm-s-dasm span.cm-string {
-  color: #1DC116;
-}
-
-.cm-s-dasm span.cm-variable {
-  color: #FFAA3E;
-}
-
-.cm-s-dasm span.cm-variable-2 {
-  color: #FFAA3E;
-}
-
-.cm-s-dasm span.cm-def {
-  color: #4DD;
-}
-
-.cm-s-dasm span.cm-bracket {
-  color: #D1EDFF;
-}
-
-.cm-s-dasm span.cm-tag {
-  color: #449;
-}
-
-.cm-s-dasm span.cm-link {
-  color: #AE81FF;
-}
-
-.cm-s-dasm span.cm-error {
-  background: #F92672;
-  color: #F8F8F0;
-}
-
-.cm-s-dasm .CodeMirror-matchingbracket {
-  text-decoration: underline;
-  color: white !important;
-}
-
-.cm-editor-line-error {
-  background:var(--c64-red);
-  color: var(--c64-white);
-}
-
 .container {
   display: grid;
-  width: 95vw;
-  height: 95vh;
-  /* height: 600px; */
-  grid-template-columns: minmax(auto,auto) 1fr 1fr;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  grid-template-columns: minmax(auto,auto) 1fr 1fr 0;
   grid-template-rows: minmax(auto, auto) 1fr 1fr 12ex;
   /* grid-gap: 1rem; */
   grid-template-areas: "header header header" "sidebar content-1 content-1" "w6502   content-1 content-1" "footer footer footer";
@@ -280,19 +191,20 @@ button[disabled] {
 
 .header {
   grid-area: header;
-  background: black;
+  color: var(--panel-text-color);
+  background: var(--panel-background-color);
+  border-bottom: var(--panel-border-width) solid var(--panel-border-color);
 }
 
 .sidebar {
   grid-area: sidebar;
-  background: var(--sidebar-background-color);
-  color: var(--sidebar-text-color);
 }
 
-.sidebar .header {
-  color: var(--sidebar-background-color);
-  background: var(--sidebar-text-color);
+header {
+  color: var(--panel-background-color);
+  background: var(--panel-text-color);
   text-align: center;
+  font-weight: bold;
 }
 
 .sidebar input[type="radio"] {
@@ -319,40 +231,18 @@ button[disabled] {
 }
 
 .w6502 {
-  padding: 0.5em;
   grid-area: w6502;
-  background: var(--status-background-color);
-  color: var(--status-text-color);
-}
-
-.header-6502 {
-  color: var(--status-background-color);
-  background: var(--status-text-color);
-  margin: -0.5em -0.5em 0.5em -0.5em;
-  text-align: center;
-  font-weight: bolder;
 }
 
 .content-1 {
   grid-area: content-1;
-  background: darkgray;
 }
 
 .footer {
   grid-area: footer;
-  background: var(--background-color);
-}
-
-.editor {
-  height: 100%;
-  width: 100%;
-  background: var(--background-color);
-  color: var(--editor-text-color);
 }
 
 #output {
-  color: var(--output-text-color);
-  background: var(--output-background-color);
   width: 100%;
   height: 100%;
 }
@@ -362,25 +252,18 @@ button[disabled] {
   display: inline-block;
 }
 
-.w6502 .value {
-  display: inline-block;
-}
-
+.w6502 .value,
 .w6502 .line {
   display: inline-block;
 }
 
-.graphics-out {
-  border: 1px solid black;
-}
-
 .filelist {
-  background: var(--c64-darkgrey);
-  color: var(--c64-white);
+  background: var(--panel-background-color);
+  color: var(--panel-text-color);
 }
 
 .filelist-item {
-  min-height: 2rem;
+  min-height: 1rem;
 }
 
 .filelist a {
@@ -391,7 +274,6 @@ button[disabled] {
 .filelist a:hover {
   color: var(--c64-blue);
   background: var(--c64-yellow);
-  padding: 0.5em;
 }
 
 .filelist a:active {
@@ -403,8 +285,8 @@ button[disabled] {
 }
 
 section {
-  background: var(--c64-blue);
-  color: var(--c64-yellow);
+  background: var(--panel-background-color);
+  color: var(--panel-text-color);
 }
 
 body.section,
@@ -425,7 +307,7 @@ section.page {
   min-width: 10em;
   margin: auto;
   padding: 0 2em 0 2em;
-  border: 2px solid var(--c64-lightgrey);
+  border: var(--panel-border-width) solid var(--panel-border-color);
   background: var(--c64-darkgrey);
 }
 
@@ -437,15 +319,15 @@ section.popup-container {
   position: absolute;
   top: 0;
   left: 0;
-  height: 99vh;
-  width: 99vw;
+  height: 100vh;
+  width: 100vw;
   z-index: 10000;
 }
 
 .popup-container>div {
   background: var(--c64-blue);
   color: var(--c64-yellow);
-  border: 2px solid var(--c64-lightblue);
+  border: var(--panel-border-width) solid var(--c64-lightblue);
   padding: 1em;
   max-width: 40em;
 }
@@ -468,8 +350,6 @@ a:visited {
   color: var(--c64-violet);
 }
 
-
-
 .main-logo {
   text-align: center;
 }
@@ -479,12 +359,10 @@ a:visited {
 }
 
 #assemble-output {
-  background: var(--editor-background-color);
-  color: var(--editor-text-color);
   height: 100%;
   overflow: scroll;
   width: 100%;
-  border-top: 2px solid var(--c64-white);
+  border-top: var(--panel-border-width) solid var(--panel-border-color);
 }
 
 #assemble-output a {
@@ -494,6 +372,6 @@ a:visited {
 .error-no-wasm {
   background: var(--c64-red);
   color: var(--c64-white);
-  border: 2px solid var(--c64-white);
+  border: var(--panel-border-width) solid var(--c64-white);
   overflow: auto;
 }
