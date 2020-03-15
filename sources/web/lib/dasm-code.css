@@ -269,10 +269,10 @@ button[disabled] {
 
 .container {
   display: grid;
-  width: 95vw;
-  height: 95vh;
-  /* height: 600px; */
-  grid-template-columns: minmax(auto,auto) 1fr 1fr;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  grid-template-columns: minmax(auto,auto) 1fr 1fr 0;
   grid-template-rows: minmax(auto, auto) 1fr 1fr 12ex;
   /* grid-gap: 1rem; */
   grid-template-areas: "header header header" "sidebar content-1 content-1" "w6502   content-1 content-1" "footer footer footer";
@@ -281,6 +281,7 @@ button[disabled] {
 .header {
   grid-area: header;
   background: black;
+  border-bottom: 1px solid var(--c64-white);
 }
 
 .sidebar {
@@ -437,8 +438,8 @@ section.popup-container {
   position: absolute;
   top: 0;
   left: 0;
-  height: 99vh;
-  width: 99vw;
+  height: 100vh;
+  width: 100vw;
   z-index: 10000;
 }
 
