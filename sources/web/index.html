@@ -12,8 +12,9 @@
 	</style>
 
 
-	<script src="lib/codemirror.js"></script>
-	<link rel="stylesheet" href="lib/codemirror.css">
+	<script src="lib/codemirror/codemirror.js"></script>
+	<script src="lib/codemirror/activeline.js"></script>
+	<link rel="stylesheet" href="lib/codemirror/codemirror.css">
 	<link rel="stylesheet" href="lib/dasm-code.css">
 
 </head>
@@ -52,14 +53,14 @@
 					<button class="js-show-graphics">Graphics</button>
 				</div>
 			</div>
-			<div class="sidebar">sidebar
-				<div class="header">
+			<div class="sidebar">
+				<header>
 					CPU SPEED
-				</div>
+				</header>
 				<div class="speedlist"></div>
 			</div>
 			<div class="w6502">
-				<div class="header-6502">6502 STATUS</div>
+				<header>6502 STATUS</header>
 				<div><span class="label">PC: </span><span class="value" id="w6502-pc">$??</span></div>
 				<div><span class="label">A: </span><span class="value" id="w6502-rega">$??</span></div>
 				<div><span class="label">X: </span><span class="value" id="w6502-regx">$??</span></div>

@@ -13,6 +13,7 @@ const init = (onchange) => {
         lineWrapping: true,
         gutters: ["CodeMirror-linenumbers", "breakpoints"],
         fixedGutter: true,
+        styleActiveLine: true,
     });
 
     cm.on('change', function () {
