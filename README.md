@@ -11,5 +11,5 @@ site that I took the idea from, [6502asm.com](http://6502asm.com).
 [Try it live!](https://jeremyjstarcher.github.io/Web_6502_IDE/)
 
 
-![Screenshot](screenshots/6502IDEEdit.png)
+![Screenshot2](docs/screenshots/6502IDEEdit.png)
 
