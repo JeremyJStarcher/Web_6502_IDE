@@ -1,9 +1,13 @@
-const makeOnloadState = (action, value) => {
-    const state = {};
+interface StateData {
+    [key: string]: any;
+}
+
+const makeOnloadState = (action: string, value: string) => {
+    const state: StateData = [];
     state[action] = value;
 
-    history.pushState(state, null, window.location.href);
-    history.pushState(state, null, window.location.href);
+    history.pushState(state, "", window.location.href);
+    history.pushState(state, "", window.location.href);
 }
 
 const onload = function () {
@@ -17,22 +21,24 @@ const onload = function () {
 
     if (urlParams.has("section")) {
         const section = urlParams.get("section");
-        makeOnloadState("section", section);
-        showSection(section);
-    } else {
-        const defaultSection = "main";
-        makeOnloadState("section", defaultSection);
-        showSection(defaultSection);
+        if (section !== null) {
+            makeOnloadState("section", section || "");
+            showSection(section || "");
+        } else {
+            const defaultSection = "main";
+            makeOnloadState("section", defaultSection);
+            showSection(defaultSection);
+        }
     }
 }
 
 // Fires when the user goes back or forward in the history.
-window.onpopstate = function (e) {
+window.onpopstate = function (e: PopStateEvent) {
     const section = e.state && e.state.section;
     const routesToSkip = ["filelist"];
 
     if (section) {
-        if (routesToSkip.includes(section)) {
+        if (routesToSkip.indexOf(section) >= 0) {
             this.history.back();
             return;
         }
@@ -48,14 +54,14 @@ const hideAllSections = () => {
     })
 };
 
-const showSection = (sectionId => {
+const showSection = ((sectionId: string) => {
     hideAllSections();
     const selector = `section[data-section-id='${sectionId}']`;
-    const el = document.querySelector(selector);
+    const el = document.querySelector(selector)! as HTMLElement;
     el.style.display = "";
 });
 
-const gotoSection = (section) => {
+const gotoSection = (section:string) => {
     showSection(section);
     return;
 
@@ -64,17 +70,17 @@ const gotoSection = (section) => {
             "section": section,
         };
 
-        history.pushState(state, null, "/?section=" + section);
+        history.pushState(state, "", "/?section=" + section);
         showSection(section);
     }
 
 };
 
 document.body.addEventListener("click", (event) => {
-    const t = event.target;
-    if (t.dataset.goto) {
-       // gotoSection(t.dataset.goto);
-       showSection(t.dataset.goto);
+    const t = event.target as HTMLElement;
+    if (t?.dataset?.goto) {
+        // gotoSection(t.dataset.goto);
+        showSection(t.dataset.goto);
     }
 });
 

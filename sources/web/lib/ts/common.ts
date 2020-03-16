@@ -8,12 +8,60 @@ const ORIGIN = (() => {
 const TYPE_FILE = 'F';
 const TYPE_DIR = 'D';
 
-const sendMessageAwaitReply = (destwindow, message) => {
+export interface BuildErrors {
+    file: string;
+    line: number;
+    code: string;
+    error: string;
+}
+
+export interface FrameSendMessage {
+    messageID?: number;
+    action?: string;
+    filename?: string;
+    contents?: string;
+    binary?: any[];
+    errors?: any[];
+    dir?: string;
+}
+
+export interface FrameReplyMessage {
+    messageID: number;
+    binary?: any;
+    errors?: any[];
+    listing?: string;
+    contents?: string;
+    stdout?: string[];
+    files?: FileListItem[];
+}
+
+export interface GetFileListRequest {
+    dir: string;
+    files: any[];
+}
+
+export interface GetFileListResponse {
+    displayName?: string;
+    name?: string;
+    type?: string;
+    fullPath?: string;
+    files?: any[];
+    isSuccess?: boolean;
+};
+
+export interface FileListItem {
+    displayName: string;
+    fullPath: string;
+    type: string;
+}
+
+
+const sendMessageAwaitReply = (destwindow: Window, message: FrameSendMessage) => {
     const currentMessageCounter = messageCounter;
     messageCounter += 1;
 
-    return new Promise((resolve, reject) => {
-        const replyListener = function replyListener(e) {
+    return new Promise<FrameReplyMessage>((resolve, reject) => {
+        const replyListener = function replyListener(e: MessageEvent) {
             if (e.origin === ORIGIN) {
                 const data = JSON.parse(e.data);
 
@@ -32,7 +80,7 @@ const sendMessageAwaitReply = (destwindow, message) => {
 
 const waitForPong = () => {
     return new Promise((resolve, reject) => {
-        const replyListener = function replyListener(e) {
+        const replyListener = function replyListener(e: MessageEvent) {
             if (e.origin === ORIGIN) {
                 const data = JSON.parse(e.data);
 
@@ -47,7 +95,7 @@ const waitForPong = () => {
     });
 };
 
-const sendPong = (destwindow) => {
+const sendPong = (destwindow: Window) => {
     const message = {
         action: "PONG",
     }

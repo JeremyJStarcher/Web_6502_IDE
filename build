@@ -12,6 +12,9 @@ function build {
     (cd sources/web_dasm && make clean ${2})
     (cd sources/v6502 && make clean ${2})
 
+    (cd sources/web && npm run clean)
+    (cd sources/web && npm run make2)
+
     cp sources/web/*.html ./${1}/
     cp sources/web/*.ico ./${1}/
     cp sources/web/lib  ./${1}/ -R

@@ -2,11 +2,14 @@
 // const compileButton = document.querySelector(".js-compile-button");
 // const runButton = document.querySelector(".js-run-button");
 // const stepButton = document.querySelector(".js-step-button");
-var cm;
+var cm: CodeMirror.Editor;
+
+declare const CodeMirror: any;
+
 let lastLineMarker = -1;
 const ERROR_STATE_CLASS = "cm-editor-line-error";
 
-const init = (onchange) => {
+const init = (onchange: () => void) => {
     cm = CodeMirror.fromTextArea(document.querySelector(".editor"), {
         lineNumbers: true,
         theme: "dasm",
@@ -36,7 +39,7 @@ const init = (onchange) => {
     }
 };
 
-const setLineMarker = (line) => {
+const setLineMarker = (line: number) => {
     clearLineMarker(lastLineMarker);
     lastLineMarker = line;
     const marker = document.createElement("span");
@@ -44,14 +47,14 @@ const setLineMarker = (line) => {
     marker.style.color = "green";
     marker.style.background = "black";
     cm.setGutterMarker(line - 1, "active-lines", marker);
-    cm.scrollIntoView({ line: line - 1 }, 10);
+    cm.scrollIntoView({ line: line - 1, ch: 0 }, 10);
 };
 
-const clearLineMarker = (line) => {
+const clearLineMarker = (line: number) => {
     cm.setGutterMarker(line - 1, "active-lines", null);
 };
 
-const setValue = (value) => {
+const setValue = (value: string) => {
     cm.setValue(value);
 }
 
@@ -65,14 +68,14 @@ const clearAllErrors = () => {
     });
 }
 
-const setErrors = (errors) => {
+const setErrors = (errors: number[]) => {
     clearAllErrors();
     errors.forEach(l => {
         cm.addLineClass(l - 1, "background", ERROR_STATE_CLASS);
     });
 }
 
-const jumpToLine = (i) => {
+const jumpToLine = (i: number) => {
     var t = cm.charCoords({ line: i, ch: 0 }, "local").top;
     var middleHeight = cm.getScrollerElement().offsetHeight / 2;
     cm.scrollTo(null, t - middleHeight - 5);

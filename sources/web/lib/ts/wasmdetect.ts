@@ -12,7 +12,7 @@
         return false;
     })();
 
-    const wasmDirectHome = document.querySelector(".js-wasm-redirect");
+    const wasmDirectHome = document.querySelector(".js-wasm-redirect") as HTMLElement;
 
     if (wasmDirectHome) {
         wasmDirectHome.innerHTML = `
@@ -35,35 +35,44 @@
 			</div>
 `;
         if (!isWasmSupported) {
-            document.querySelector("#runwasm").disabled = true;
-            document.querySelector("#wasm-no").display = "";
+            const e1 = document.querySelector("#runwasm") as HTMLButtonElement;
+            if (e1) {
+                e1.disabled = true;
+            }
+
+            const e2 = document.querySelector("#wasm-no") as HTMLButtonElement;
+            if (e2) {
+                e2.style.display = "";
+            }
         }
 
-        document.querySelector("#runwasm").addEventListener("click", () => {
-            window.location = "wasm/";
+        document.querySelector("#runwasm")?.addEventListener("click", () => {
+            (window as any).location = "wasm/";
         });
 
 
-        document.querySelector("#runasm").addEventListener("click", () => {
-            window.location = "asmjs/";
+        document.querySelector("#runasm")?.addEventListener("click", () => {
+            (window as any).location = "asmjs/";
         });
     }
 
+    const wasmFlag = (window as any).WASM_FLAG;
+
     const list = Array.from(document.querySelectorAll(".js-wasm-mode"));
     list.forEach(el => {
-        const text = window.WASM_FLAG ? "WASM" : "ASM.js";
+        const text = wasmFlag.WASM_FLAG ? "WASM" : "ASM.js";
         el.innerHTML = `[Current mode: ${text}]`;
     });
 
-    const warning = document.querySelector(".js-error-no-wasm");
-    if (!isWasmSupported && window.WASM_FLAG) {
+    const warning = document.querySelector(".js-error-no-wasm") as HTMLElement;
+    if (!isWasmSupported && wasmFlag) {
         if (warning) {
             warning.style.display = "";
         }
     }
     const warningIcon = document.querySelector(".error-icon");
     if (warningIcon) {
-    warningIcon.innerHTML = `...._....
+        warningIcon.innerHTML = `...._....
 .../.\\...
 ../.|.\\..
 ./..|..\\.

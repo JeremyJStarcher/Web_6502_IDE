@@ -1,11 +1,14 @@
 import common from "./common.js";
+import { BuildErrors, GetFileListRequest, GetFileListResponse, FrameReplyMessage, FrameSendMessage } from "./common.js";
 
-const stdOut = [];
+declare const Module: any;
+const stdOut: string[] = [];
+declare const FS: any;
 
-const getFileListEvent = (data, reply) => {
-    const names = FS.readdir(data.dir).filter(n => n !== ".");
+const getFileListEvent = (data: GetFileListRequest, reply: GetFileListResponse) => {
+    const names = FS.readdir(data.dir).filter((n: string) => n !== ".");
 
-    const list = names.map(n => {
+    const list = names.map((n: string) => {
         const s = FS.lstat(`${data.dir}/${n}`);
 
         const isDir = FS.isDir(s.mode);
@@ -24,10 +27,14 @@ const getFileListEvent = (data, reply) => {
         }
     });
 
-    var dirs = list.filter(p => p.type === common.TYPE_DIR);
-    var files = list.filter(p => p.type === common.TYPE_FILE);
+    var dirs = list.filter((p: GetFileListResponse) => p.type === common.TYPE_DIR);
+    var files = list.filter((p: GetFileListResponse) => p.type === common.TYPE_FILE);
 
-    const sortF = (a, b) => (a.name.toUpperCase() > b.name.toUpperCase()) ? 1 : -1;
+    interface FileSortValue {
+        name: string;
+    }
+
+    const sortF = (a: FileSortValue, b: FileSortValue) => (a.name.toUpperCase() > b.name.toUpperCase()) ? 1 : -1;
 
     dirs.sort(sortF);
     files.sort(sortF);
@@ -36,30 +43,31 @@ const getFileListEvent = (data, reply) => {
     parent.postMessage(JSON.stringify(reply), common.ORIGIN);
 };
 
-const stdoutToError = (stdout) => {
+const stdoutToError = (stdout: string[]) => {
     // bios.asm:3: error: Unknown Mnemonic 'zzz'.
 
-    const errors = [];
+    const errors: BuildErrors[] = [];
 
     stdout.forEach(l => {
         const [file, line, code, error] = l
             .split(":")
-            .map(s => s.trim())
-            .map((s, i) => i === 1 ? Number(s) : s);
+            .map(s => s.trim());
 
         if (code === "error") {
-            errors.push({
+            const err: BuildErrors = {
                 file,
-                line,
+                line: +line,
                 code,
                 error,
-            })
+            };
+
+            errors.push(err);
         }
     });
     return errors;
 };
 
-const runAssemblerEvent = (data, reply) => {
+const runAssemblerEvent = (data: FrameSendMessage, reply: FrameReplyMessage) => {
     const outputformat = 2;
     const types = ['string', 'integer'];
     const args = [data.filename, outputformat];
@@ -86,30 +94,30 @@ const runAssemblerEvent = (data, reply) => {
 };
 
 
-const unlinkFileEvent = (data, reply) => {
+const unlinkFileEvent = (data:FrameSendMessage, reply:FrameReplyMessage) => {
     FS.writeFile(data.filename, "");
     FS.unlink(data.filename);
 
     parent.postMessage(JSON.stringify(reply), common.ORIGIN);
 };
 
-const writeFileEvent = (data, reply) => {
+const writeFileEvent = (data: FrameSendMessage, reply: FrameReplyMessage) => {
     FS.writeFile(data.filename, data.contents);
     parent.postMessage(JSON.stringify(reply), common.ORIGIN);
 };
 
-const writeReadTextFileEvent = (data, reply) => {
+const writeReadTextFileEvent = (data:FrameSendMessage, reply:FrameReplyMessage) => {
     reply.contents = FS.readFile(data.filename, { encoding: "utf8" });
     parent.postMessage(JSON.stringify(reply), common.ORIGIN);
 };
 
-const writeReadBinaryFileEvent = (data, reply) => {
+const writeReadBinaryFileEvent = (data:FrameSendMessage, reply:FrameReplyMessage) => {
     const contents = FS.readFile(data.filename);
     reply.contents = contents;
     parent.postMessage(JSON.stringify(reply), common.ORIGIN);
 };
 
-const messageEventListener = function (e) {
+const messageEventListener = function (e:MessageEvent) {
     if (e.origin === common.ORIGIN) {
         const data = JSON.parse(e.data);
 
@@ -144,13 +152,13 @@ const messageEventListener = function (e) {
 
 window.addEventListener('message', messageEventListener, false);
 
-window.dasm_main = () => {
+(window as any).dasm_main = () => {
     common.sendPong(parent);
 };
 
 // Note:
 //   The version of dasm used here logs error messages to stdout
 //   not stderror.
-window.dasm_log_stdout = (msg) => {
+(window as any).dasm_log_stdout = (msg:string) => {
     stdOut.push(msg);
 };

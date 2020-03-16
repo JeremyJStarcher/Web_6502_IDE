@@ -1,3 +1,5 @@
+declare const Module: any;
+
 import common from "./common.js";
 import route from "./route.js";
 import { editor } from "./editor.js";
@@ -32,23 +34,23 @@ const palette = [
 	"#777777", "#aaff66", "#0088ff", "#bbbbbb"
 ];
 
-const goButton = document.querySelector(".js-go-button");
-const assembleButton = document.querySelector(".js-compile-button");
-const pauseButton = document.querySelector(".js-pause-button");
-const resetButton = document.querySelector(".js-reset-button");
-const flickerButton = document.querySelector(".js-flicker-button");
-const runButton = document.querySelector(".js-run-button");
-const stepButton = document.querySelector(".js-step-button");
-const showCodeButton = document.querySelector(".js-show-code");
-const showGraphicsButton = document.querySelector(".js-show-graphics");
-const graphicsOutPanel = document.querySelector(".graphics-out");
-const ctx = graphicsOutPanel.getContext("2d");
+const goButton = document.querySelector(".js-go-button") as HTMLButtonElement;
+const assembleButton = document.querySelector(".js-compile-button") as HTMLButtonElement;
+const pauseButton = document.querySelector(".js-pause-button") as HTMLButtonElement;
+const resetButton = document.querySelector(".js-reset-button") as HTMLButtonElement;
+const flickerButton = document.querySelector(".js-flicker-button") as HTMLButtonElement;
+const runButton = document.querySelector(".js-run-button") as HTMLButtonElement;
+const stepButton = document.querySelector(".js-step-button") as HTMLButtonElement;
+const showCodeButton = document.querySelector(".js-show-code") as HTMLButtonElement;
+const showGraphicsButton = document.querySelector(".js-show-graphics") as HTMLButtonElement;
+const graphicsOutPanel = document.querySelector(".graphics-out") as HTMLCanvasElement;
+const ctx = graphicsOutPanel!.getContext("2d") as CanvasRenderingContext2D;
 const editorContainer = document.querySelector(".container");
 const filePickerContainer = document.querySelector(".filelist-container");
-const loadFileButton = document.querySelector(".js-load-file-button");
-const assembleOutput = document.querySelector("#assemble-output");
-const editorButton = document.querySelector(".js-editor-button");
-const menuButton = document.querySelector(".js-show-menu");
+const loadFileButton = document.querySelector(".js-load-file-button") as HTMLButtonElement;
+const assembleOutput = document.querySelector("#assemble-output") as HTMLDivElement;
+const editorButton = document.querySelector(".js-editor-button") as HTMLButtonElement;
+const menuButton = document.querySelector(".js-show-menu") as HTMLButtonElement;
 
 const DISPLAY_UNCHANGED = -1;
 const DISPLAY_EDITOR = 1;
@@ -66,7 +68,7 @@ const editorFlags = {
 	displayMode: DISPLAY_EDITOR,
 };
 
-let biosBin = []; // precompile the binary and copy it as needed
+let biosBin = [] as number[]; // precompile the binary and copy it as needed
 const trace = [];
 
 let [m6502pc,
@@ -88,9 +90,9 @@ const write6502 = Module.cwrap('write6502', 'void', ['number']);
 const read6502 = Module.cwrap('read6502', 'number', ['void']);
 const reset6502 = Module.cwrap('reset6502', null, ['void']);
 
-let rand = (a, b) /* min, max inclusive */ => a + (b - a + 1) * crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32 | 0
+let rand = (a: number, b: number) /* min, max inclusive */ => a + (b - a + 1) * crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32 | 0
 
-const writeScreenAddress = (address, value) => {
+const writeScreenAddress = (address: number, value: number) => {
 	if (address < 0x200 || address > 0x05FF) {
 		return;
 	}
@@ -129,7 +131,7 @@ const clearScreen = () => {
 };
 
 
-const toHex = (num, places) => {
+const toHex = (num: number, places: number) => {
 	if (num === undefined) {
 		return '$' + "-------------".slice(places);
 	}
@@ -141,7 +143,7 @@ const toHex = (num, places) => {
 	return '$' + s.toUpperCase();
 }
 
-const copyBinaryToRam = (stream /* Uint8Array */) => {
+const copyBinaryToRam = (stream: Uint8Array | number[]) => {
 	// The stream format we choose for this project has the following format:
 	// Chunk format, may be repeated multiple times
 	// Address:  <LSB> <MSB>
@@ -164,7 +166,16 @@ const copyBinaryToRam = (stream /* Uint8Array */) => {
 	}
 }
 
-const create6502 = (lineMappings) => {
+interface MOS6502 {
+	destroy: () => void;
+	singleStep: () => void;
+	run: () => void;
+	flicker: () => void;
+	reset: () => void;
+	pause: () => void;
+}
+
+const create6502 = (lineMappings: LineMappings[]) => {
 	const step6502 = Module.cwrap('js_step6502', 'null', ['number', 'number']);
 	let doBreak = false;
 
@@ -174,7 +185,7 @@ const create6502 = (lineMappings) => {
 	const nDataBytes = cpu_status_data.length * cpu_status_data.BYTES_PER_ELEMENT;
 	let dataPtr = Module._malloc(nDataBytes);
 
-	let dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
+	let dataHeap: Uint8Array | null = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
 	reset6502();
 
 	const destroy = () => {
@@ -220,7 +231,7 @@ const create6502 = (lineMappings) => {
 
 			if (newGraphicsMode !== DISPLAY_GRAPHICS) {
 				newGraphicsMode = DISPLAY_UNCHANGED;
-				showGraphicsButton.click();
+				showGraphicsButton!.click();
 			}
 
 			if (!doBreak) {
@@ -254,11 +265,11 @@ const create6502 = (lineMappings) => {
 
 	const executeInstruction = () => {
 		write6502(0xFE, rand(0, 255));
-		dataHeap.set(new Uint8Array(cpu_status_data.buffer));
+		dataHeap!.set(new Uint8Array(cpu_status_data.buffer));
 		const oldpc = m6502pc;
 
-		step6502(dataHeap.byteOffset, cpu_status_data.length);
-		const result = new Uint16Array(dataHeap.buffer, dataHeap.byteOffset, cpu_status_data.length);
+		step6502(dataHeap!.byteOffset, cpu_status_data.length);
+		const result = new Uint16Array(dataHeap!.buffer, dataHeap!.byteOffset, cpu_status_data.length);
 
 		[
 			m6502pc, m6502sp, m6502_rega, m6502_regx, m6502_regy,
@@ -270,7 +281,7 @@ const create6502 = (lineMappings) => {
 
 		const v = read6502(0x0602);
 
-		const s = `:v:${toHex(v, 2)}:: oldpc:${toHex(oldpc, 4)} -> pc:${toHex(m6502pc, 4)} addr:${toHex(m6502_last_bus_address)}: value:${toHex(m6502_last_bus_value, 2)} op:${toHex(m6502_opcode, 2)}`;
+		const s = `:v:${toHex(v, 2)}:: oldpc:${toHex(oldpc, 4)} -> pc:${toHex(m6502pc, 4)} addr:${toHex(m6502_last_bus_address, 4)}: value:${toHex(m6502_last_bus_value, 2)} op:${toHex(m6502_opcode, 2)}`;
 		trace.unshift(s);
 		trace.length = 40;
 
@@ -285,15 +296,15 @@ const create6502 = (lineMappings) => {
 			editor.setLineMarker(details.line);
 		}
 
-		document.querySelector("#w6502-pc").innerHTML = toHex(m6502pc, 4);
-		document.querySelector("#w6502-rega").innerHTML = toHex(m6502_rega, 2);
-		document.querySelector("#w6502-regx").innerHTML = toHex(m6502_regx, 2);
-		document.querySelector("#w6502-regy").innerHTML = toHex(m6502_regy, 2);
-		document.querySelector("#w6502-opcode").innerHTML = toHex(m6502_opcode, 2);
-		document.querySelector("#w6502-byte1").innerHTML = toHex(m6502_operand1, 2);
-		document.querySelector("#w6502-byte2").innerHTML = toHex(m6502_operand2, 2);
-		document.querySelector("#w6502-sp").innerHTML = toHex(m6502sp, 2);
-		document.querySelector("#w6502-flags").innerHTML = ("0000000000" + m6502_status_bits.toString(2)).slice(-8);
+		document.querySelector("#w6502-pc")!.innerHTML = toHex(m6502pc, 4);
+		document.querySelector("#w6502-rega")!.innerHTML = toHex(m6502_rega, 2);
+		document.querySelector("#w6502-regx")!.innerHTML = toHex(m6502_regx, 2);
+		document.querySelector("#w6502-regy")!.innerHTML = toHex(m6502_regy, 2);
+		document.querySelector("#w6502-opcode")!.innerHTML = toHex(m6502_opcode, 2);
+		document.querySelector("#w6502-byte1")!.innerHTML = toHex(m6502_operand1, 2);
+		document.querySelector("#w6502-byte2")!.innerHTML = toHex(m6502_operand2, 2);
+		document.querySelector("#w6502-sp")!.innerHTML = toHex(m6502sp, 2);
+		document.querySelector("#w6502-flags")!.innerHTML = ("0000000000" + m6502_status_bits.toString(2)).slice(-8);
 	};
 
 
@@ -310,7 +321,7 @@ const create6502 = (lineMappings) => {
 const destroydasmIframe = async () => {
 	const oldiframe = document.getElementById(DASM_IFRAME_ID);
 	if (oldiframe) {
-		oldiframe.parentNode.removeChild(oldiframe);
+		oldiframe.parentNode!.removeChild(oldiframe);
 	}
 }
 
@@ -326,10 +337,13 @@ const loadDasmIFrame = async () => {
 
 	await common.waitForPong();
 
-	return dasmIframe.contentWindow;
+	return dasmIframe.contentWindow!;
 };
 
-const assemble = async (cw, filename, src) => {
+const assemble = async (
+	cw: any,
+	filename: string,
+	src: string) => {
 	route.gotoSection("wait");
 
 	const sendmessagereply = await common.sendMessageAwaitReply(cw, {
@@ -353,25 +367,31 @@ const assemble = async (cw, filename, src) => {
 	// have a 'length' property, so we'll calculate the length
 	// out by hand and then turn it into a real array.
 
-	const keys = Object.keys(assembleResult.binary);
-	const max = Math.max(...keys);
-	assembleResult.binary.length = max + 1;
-	assembleResult.binary = Array.from(assembleResult.binary);
+	if (assembleResult.binary) {
+		const keys = Object.keys(assembleResult.binary).map(Number);
+		const max = Math.max(...keys);
+		assembleResult.binary.length = max + 1;
+		assembleResult.binary = Array.from(assembleResult.binary);
+	}
 
 	copyBinaryToRam(biosBin);
 	copyBinaryToRam(assembleResult.binary);
 
-	const errorLines = assembleResult.errors.map(e => e.line);
-	editor.setErrors(errorLines);
+	if (assembleResult.errors) {
+		const errorLines = assembleResult.errors.map(e => e.line);
+		editor.setErrors(errorLines);
 
-	assembleOutput.innerHTML = assembleResult.errors.map(l => {
-		return `<a href="#"
+		assembleOutput!.innerHTML = assembleResult.errors.map(l => {
+			return `<a href="#"
                  data-error-message="${l.error}"
                  data-line="${l.line}"
                  data-file="${l.file}">
                  Error: Line ${l.line}: ${l.error}
                </a>`;
-	}).join("<br>");
+		}).join("<br>");
+
+		editorFlags.canRun = !assembleResult.errors.length;
+	}
 
 	fillScreen();
 
@@ -382,57 +402,56 @@ const assemble = async (cw, filename, src) => {
 
 const wireButtons = () => {
 	let lineMappings;
-	let m6502;
+	let m6502: MOS6502;
 
-	const runAssemble = async (filename, src) => {
+	const runAssemble = async (filename: string, src: string) => {
 		const cw = await loadDasmIFrame();
 		const assembleResult = await assemble(cw, filename, src);
 		destroydasmIframe();
 
 		// console.log(assembleResult.listing);
-		lineMappings = buildLineMappings(assembleResult.listing);
+		lineMappings = buildLineMappings(assembleResult?.listing || "--");
 
 		if (m6502) {
 			m6502.destroy();
 		}
 
 		m6502 = create6502(lineMappings);
-		editorFlags.canRun = !assembleResult.errors.length;
 		updateButtons();
 	};
 
-	goButton.addEventListener("click", async () => {
+	goButton!.addEventListener("click", async () => {
 		reset6502();
 		await runAssemble("/file", editor.getValue());
 		m6502.run();
 	});
 
-	assembleButton.addEventListener("click", () => {
+	assembleButton!.addEventListener("click", () => {
 		reset6502();
 		runAssemble("/file", editor.getValue());
 	});
 
-	runButton.addEventListener("click", () => {
+	runButton!.addEventListener("click", () => {
 		m6502.run();
 	});
 
-	flickerButton.addEventListener("click", () => {
+	flickerButton!.addEventListener("click", () => {
 		m6502.flicker();
 	});
 
-	resetButton.addEventListener("click", () => {
+	resetButton!.addEventListener("click", () => {
 		m6502.reset();
 	});
 
-	pauseButton.addEventListener("click", () => {
+	pauseButton!.addEventListener("click", () => {
 		m6502.pause();
 	});
 
-	stepButton.addEventListener("click", () => {
+	stepButton!.addEventListener("click", () => {
 		m6502.singleStep();
 	});
 
-	showCodeButton.addEventListener("click", () => {
+	showCodeButton!.addEventListener("click", () => {
 		editorFlags.displayMode = DISPLAY_EDITOR;
 		updateButtons();
 	});
@@ -450,19 +469,20 @@ const wireButtons = () => {
 	}, true);
 
 	document.addEventListener("click", (e) => {
-		const t = event.target;
-		if (t.dataset.errorMessage) {
-			editor.jumpToLine(+t.dataset.line);
+		const t = event!.target as HTMLElement
+		if (t && t.dataset!.errorMessage) {
+			const val = t.dataset.line as string;
+			editor.jumpToLine(+val);
 		}
 	});
 
-	const speedlist = document.querySelector(".speedlist");
+	const speedlist = document.querySelector(".speedlist") as HTMLElement;
 	while (speedlist.firstChild) {
-		speedlist.remove(speedlist.firstChild);
+		speedlist.removeChild(speedlist.firstChild);
 	};
 
 	CPU_SPEEDS.forEach((d, i, a) => {
-		const checked = d.speed === CPS ? "checked" : "";
+		const checked = d.speed === CPS;
 		const div = document.createElement("div");
 		const label = document.createElement("label");
 		const input = document.createElement("input");
@@ -475,21 +495,26 @@ const wireButtons = () => {
 
 		input.type = "radio";
 		input.name = "cpuspeed";
-		input.value = d.speed;
+		input.value = "" + d.speed;
 		input.checked = checked;
 
 		label.addEventListener("click", (e) => {
-			const inp = e.currentTarget.querySelector("input");
+			const curTarget = e!.currentTarget as HTMLElement;
+			const inp = curTarget!.querySelector("input") as HTMLInputElement;
 			inp.checked = true;
-			currentCps = inp.value;
+			currentCps = +inp.value;
 		});
 
 		span.appendChild(document.createTextNode(d.words));
 	});
 };
 
-const buildLineMappings = (listing) => {
-	let map = [];
+interface LineMappings {
+	file: string;
+	line: number;
+}
+const buildLineMappings = (listing: string) => {
+	let map: LineMappings[] = [];
 
 	let file = "";
 	let line = 0;
@@ -544,7 +569,7 @@ const buildLineMappings = (listing) => {
 }
 
 const updateButtons = () => {
-	const editorPanel = document.querySelector(".CodeMirror");
+	const editorPanel = document.querySelector(".CodeMirror") as HTMLElement;
 
 	[goButton, assembleButton, flickerButton, runButton, stepButton]
 		.forEach(b => b.disabled = true);
@@ -563,10 +588,10 @@ const updateButtons = () => {
 
 	switch (editorFlags.displayMode) {
 		case DISPLAY_EDITOR:
-			editorPanel.style.display = null;
+			editorPanel.style.display = "";
 			break;
 		case DISPLAY_GRAPHICS:
-			graphicsOutPanel.style.display = null;
+			graphicsOutPanel.style.display = "";
 			break;
 	}
 };
@@ -577,7 +602,7 @@ const onCodeChange = () => {
 	updateButtons();
 };
 
-const buildBios = async (cw) => {
+const buildBios = async (cw:Window) => {
 	const workFile = "/tmp_bios";
 
 	const filereadResult = await common.sendMessageAwaitReply(cw, {
@@ -593,11 +618,11 @@ const buildBios = async (cw) => {
 		contents: src,
 	});
 
-	const assembleResults = await assemble(cw, workFile, src);
+	const assembleResults = await assemble(cw, workFile, src ?? "--");
 	biosBin = assembleResults.binary;
 };
 
-window.main_init = async () => {
+(window as any).main_init = async () => {
 	const cw = await loadDasmIFrame();
 	editor.init(onCodeChange);
 	editor.setValue("; Placeholder\n; Placeholder");
@@ -631,8 +656,8 @@ window.main_init = async () => {
 };
 
 function resizeCanvas() {
-	const con = document.querySelector(".editor-panel");
-	const canvas = document.querySelector(".graphics-out");
+	const con = document.querySelector(".editor-panel") as HTMLElement;
+	const canvas = document.querySelector(".graphics-out") as HTMLCanvasElement;
 
 	// Go back to full size
 	canvas.style.transform = `translate(0px, 0px) scale(1)`;

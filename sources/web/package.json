@@ -1,0 +1,21 @@
+{
+  "name": "web_6502_ide",
+  "version": "0.0.1",
+  "description": "The Web6502 IDE",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fix": " rm -rf node_modules/@types/tern; ",
+    "clean": "rm -f lib/ts/*.js;",
+    "make2": "tsc --project lib/ts"
+  },
+ "author": "Jeremy J Starcher",
+  "license": "SEE LICENSE IN LICENSE.TXT",
+  "devDependencies": {
+    "@types/codemirror": "0.0.87",
+    "typescript": "^3.8.3"
+  }
+}
