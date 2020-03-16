@@ -86,6 +86,7 @@ let [m6502pc,
 
 const write6502 = Module.cwrap('write6502', 'void', ['number']);
 const read6502 = Module.cwrap('read6502', 'number', ['void']);
+const reset6502 = Module.cwrap('reset6502', null, ['void']);
 
 let rand = (a, b) /* min, max inclusive */ => a + (b - a + 1) * crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32 | 0
 
@@ -174,7 +175,7 @@ const create6502 = (lineMappings) => {
 	let dataPtr = Module._malloc(nDataBytes);
 
 	let dataHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, nDataBytes);
-	Module.ccall('reset6502', null, []);
+	reset6502();
 
 	const destroy = () => {
 		if (dataHeap) {
@@ -233,7 +234,7 @@ const create6502 = (lineMappings) => {
 
 	const reset = () => {
 		clearScreen();
-		Module.ccall('reset6502', null, []);
+		reset6502();
 		doBreak = true;
 	};
 
@@ -401,13 +402,13 @@ const wireButtons = () => {
 	};
 
 	goButton.addEventListener("click", async () => {
-		Module.ccall('reset6502', null, []);
+		reset6502();
 		await runAssemble("/file", editor.getValue());
 		m6502.run();
 	});
 
 	assembleButton.addEventListener("click", () => {
-		Module.ccall('reset6502', null, []);
+		reset6502();
 		runAssemble("/file", editor.getValue());
 	});
 
