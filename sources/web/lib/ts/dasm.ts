@@ -1,14 +1,13 @@
 import common from "./common.js";
-import { BuildErrors, GetFileListRequest, GetFileListResponse, FrameReplyMessage, FrameSendMessage } from "./common.js";
 
 declare const Module: any;
 const stdOut: string[] = [];
 declare const FS: any;
 
-const getFileListEvent = (data: GetFileListRequest, reply: GetFileListResponse) => {
+const getFileListEvent = (data: GetFileListRequest) => {
     const names = FS.readdir(data.dir).filter((n: string) => n !== ".");
 
-    const list = names.map((n: string) => {
+    const list: DirectoryList[] = names.map((n: string) => {
         const s = FS.lstat(`${data.dir}/${n}`);
 
         const isDir = FS.isDir(s.mode);
@@ -18,17 +17,19 @@ const getFileListEvent = (data: GetFileListRequest, reply: GetFileListResponse) 
 
         const blocks = type === common.TYPE_DIR ? "[]" : "";
         const displayName = blocks.charAt(0) + n.toUpperCase() + blocks.charAt(1);
-
-        return {
+        const r: DirectoryList = {
             displayName,
             name: n,
             type,
             fullPath: `${data.dir}/${n}`,
-        }
+
+        };
+
+        return r;
     });
 
-    var dirs = list.filter((p: GetFileListResponse) => p.type === common.TYPE_DIR);
-    var files = list.filter((p: GetFileListResponse) => p.type === common.TYPE_FILE);
+    var dirs = list.filter((p) => p.type === common.TYPE_DIR);
+    var files = list.filter((p) => p.type === common.TYPE_FILE);
 
     interface FileSortValue {
         name: string;
@@ -38,9 +39,14 @@ const getFileListEvent = (data: GetFileListRequest, reply: GetFileListResponse) 
 
     dirs.sort(sortF);
     files.sort(sortF);
-    reply.files = [...dirs, ...files];
 
-    parent.postMessage(JSON.stringify(reply), common.ORIGIN);
+    const response: GetFileListResponse = {
+        isSuccess: true,
+        files: [...dirs, ...files],
+        messageID: data.messageID,
+    };
+
+    parent.postMessage(JSON.stringify(response), common.ORIGIN);
 };
 
 const stdoutToError = (stdout: string[]) => {
@@ -67,10 +73,10 @@ const stdoutToError = (stdout: string[]) => {
     return errors;
 };
 
-const runAssemblerEvent = (data: FrameSendMessage, reply: FrameReplyMessage) => {
+const runAssemblerEvent = (request: RunAssemblerRequest) => {
     const outputformat = 2;
     const types = ['string', 'integer'];
-    const args = [data.filename, outputformat];
+    const args = [request.filename, outputformat];
 
     const result = Module.ccall(
         'wasm_main',	// name of C function
@@ -79,73 +85,92 @@ const runAssemblerEvent = (data: FrameSendMessage, reply: FrameReplyMessage) => 
         args,
     );
 
-    const listing = FS.readFile(`${data.filename}.lst`, { encoding: "utf8" });
-    const bin = FS.readFile(`${data.filename}.bin`);
+    const listing = FS.readFile(`${request.filename}.lst`, { encoding: "utf8" });
+    const typedBin = FS.readFile(`${request.filename}.bin`);
 
+    // Convert a typed array to a normal JS array.
+    // Typed arrays don't survive the transport process.
+    const bin = Array.from(typedBin) as number[];
 
+    const response: RunAssemblerResponse = {
+        errors: stdoutToError(stdOut),
+        stdout: stdOut,
+        listing: listing,
+        binary: bin,
+        messageID: request.messageID,
+    };
 
-    reply.errors = stdoutToError(stdOut);
-
-    reply.stdout = stdOut;
-    reply.listing = listing;
-    reply.binary = bin;
-
-    parent.postMessage(JSON.stringify(reply), common.ORIGIN);
+    parent.postMessage(JSON.stringify(response), common.ORIGIN);
 };
 
 
-const unlinkFileEvent = (data:FrameSendMessage, reply:FrameReplyMessage) => {
-    FS.writeFile(data.filename, "");
-    FS.unlink(data.filename);
+const unlinkFileEvent = (request: UnlinkFileRequest) => {
+    FS.writeFile(request.filename, "");
+    FS.unlink(request.filename);
 
-    parent.postMessage(JSON.stringify(reply), common.ORIGIN);
+    const response: UnlinkFileResponse = {
+        messageID: request.messageID,
+    };
+
+    parent.postMessage(JSON.stringify(response), common.ORIGIN);
 };
 
-const writeFileEvent = (data: FrameSendMessage, reply: FrameReplyMessage) => {
-    FS.writeFile(data.filename, data.contents);
-    parent.postMessage(JSON.stringify(reply), common.ORIGIN);
+const writeFileEvent = (request: WriteTextFileRequest) => {
+    FS.writeFile(request.filename, request.contents);
+    const response: WriteTextFileResponse = {
+        messageID: request.messageID,
+    };
+    parent.postMessage(JSON.stringify(response), common.ORIGIN);
 };
 
-const writeReadTextFileEvent = (data:FrameSendMessage, reply:FrameReplyMessage) => {
-    reply.contents = FS.readFile(data.filename, { encoding: "utf8" });
-    parent.postMessage(JSON.stringify(reply), common.ORIGIN);
+const readTextFileEvent = (request: ReadTextFileRequest) => {
+    const response: ReadTextFileResponse = {
+        isSuccess: true,
+        contents: FS.readFile(request.filename, { encoding: "utf8" }),
+        messageID: request.messageID,
+    }
+    parent.postMessage(JSON.stringify(response), common.ORIGIN);
 };
 
-const writeReadBinaryFileEvent = (data:FrameSendMessage, reply:FrameReplyMessage) => {
-    const contents = FS.readFile(data.filename);
-    reply.contents = contents;
-    parent.postMessage(JSON.stringify(reply), common.ORIGIN);
+const readBinaryFileEvent = (request: ReadBinaryFileRequest) => {
+    const response: ReadBinaryFileResponse = {
+        isSuccess: true,
+        contents: FS.readFile(request.filename),
+        messageID: request.messageID,
+    }
+    parent.postMessage(JSON.stringify(response), common.ORIGIN);
 };
 
-const messageEventListener = function (e:MessageEvent) {
+
+const assertNever = (x: never): never => {
+    throw new Error(`Unexpected object: ${x}`);
+}
+
+const messageEventListener = function (e: MessageEvent) {
     if (e.origin === common.ORIGIN) {
-        const data = JSON.parse(e.data);
+        const request = JSON.parse(e.data) as SendMessageType;
 
-        const reply = {
-            messageID: data.messageID,
-            isSuccess: true,
-        };
-
-        switch (data.action) {
+        switch (request.action) {
             case "writeFile":
-                writeFileEvent(data, reply);
+                writeFileEvent(request);
                 break;
             case "readTextFile":
-                writeReadTextFileEvent(data, reply);
+                readTextFileEvent(request);
                 break;
             case "readBinaryFile":
-                writeReadBinaryFileEvent(data, reply);
+                readBinaryFileEvent(request);
                 break;
             case "unlinkFile":
-            case "unlinkFile":
-                unlinkFileEvent(data, reply);
+                unlinkFileEvent(request);
                 break;
             case "runAssembler":
-                runAssemblerEvent(data, reply);
+                runAssemblerEvent(request);
                 break;
             case "getFileList":
-                getFileListEvent(data, reply);
+                getFileListEvent(request);
                 break;
+            default:
+                assertNever(request);
         }
     }
 }
@@ -159,6 +184,6 @@ window.addEventListener('message', messageEventListener, false);
 // Note:
 //   The version of dasm used here logs error messages to stdout
 //   not stderror.
-(window as any).dasm_log_stdout = (msg:string) => {
+(window as any).dasm_log_stdout = (msg: string) => {
     stdOut.push(msg);
 };

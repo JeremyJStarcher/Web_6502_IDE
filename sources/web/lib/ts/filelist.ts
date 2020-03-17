@@ -13,10 +13,12 @@ export const fileList = (() => {
         const container = document.querySelector(".filelist") as HTMLElement;
         container.innerHTML = "";
 
-        const reply = await common.sendMessageAwaitReply(cw, {
-            action: 'getFileList',
-            dir: dir,
-        });
+        const reply = await common.sendMessage<GetFileListRequest, GetFileListResponse>
+            (cw, {
+                action: 'getFileList',
+                dir: dir,
+                messageID: 0,
+            });
 
         (reply.files || []).forEach((l) => {
             const li = document.createElement("li");
@@ -35,15 +37,16 @@ export const fileList = (() => {
                 event.preventDefault();
                 const target = event?.target as HTMLLinkElement;
 
-                    const thisname = target?.href?.split("#")[1] || "--";
+                const thisname = target?.href?.split("#")[1] || "--";
 
                 if (reply.files) {
                     const d = reply.files.filter((a) => a.fullPath === thisname)[0];
 
                     if (d.type === common.TYPE_FILE) {
 
-                        const selectedFileResult = await common.sendMessageAwaitReply(cw, {
+                        const selectedFileResult = await common.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
                             action: 'readTextFile',
+                            messageID: 0,
                             filename: thisname,
                         });
 
@@ -56,10 +59,10 @@ export const fileList = (() => {
                     }
                 }
             });
-    });
-};
+        });
+    };
 
-return {
-    pickFile,
-}
-}) ();
+    return {
+        pickFile,
+    }
+})();

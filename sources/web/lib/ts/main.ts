@@ -346,18 +346,21 @@ const assemble = async (
 	src: string) => {
 	route.gotoSection("wait");
 
-	const sendmessagereply = await common.sendMessageAwaitReply(cw, {
+	const sendmessagereply = await common.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(cw, {
+		messageID: 0,
 		action: 'writeFile',
 		filename: `${filename}.asm`,
 		contents: src,
 	});
 
-	await common.sendMessageAwaitReply(cw, {
+	await common.sendMessage<UnlinkFileRequest, UnlinkFileResponse>(cw, {
+		messageID: 0,
 		action: 'unlinkFile',
 		filename: `${filename}.bin`,
 	});
 
-	const assembleResult = await common.sendMessageAwaitReply(cw, {
+	const assembleResult = await common.sendMessage<RunAssemblerRequest, RunAssemblerResponse>(cw, {
+		messageID: 0,
 		action: 'runAssembler',
 		filename: `${filename}`,
 	});
@@ -366,13 +369,6 @@ const assemble = async (
 	// as an object and keys, not an array.  it doesn't even
 	// have a 'length' property, so we'll calculate the length
 	// out by hand and then turn it into a real array.
-
-	if (assembleResult.binary) {
-		const keys = Object.keys(assembleResult.binary).map(Number);
-		const max = Math.max(...keys);
-		assembleResult.binary.length = max + 1;
-		assembleResult.binary = Array.from(assembleResult.binary);
-	}
 
 	copyBinaryToRam(biosBin);
 	copyBinaryToRam(assembleResult.binary);
@@ -602,17 +598,19 @@ const onCodeChange = () => {
 	updateButtons();
 };
 
-const buildBios = async (cw:Window) => {
+const buildBios = async (cw: Window) => {
 	const workFile = "/tmp_bios";
 
-	const filereadResult = await common.sendMessageAwaitReply(cw, {
+	const filereadResult = await common.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
+		messageID: 0,
 		action: 'readTextFile',
 		filename: `/asm/bios.asm`,
 	});
 
 	const src = filereadResult.contents;
 
-	await common.sendMessageAwaitReply(cw, {
+	await common.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(cw, {
+		messageID: 0,
 		action: 'writeFile',
 		filename: `${workFile}.asm`,
 		contents: src,
