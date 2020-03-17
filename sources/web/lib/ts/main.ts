@@ -52,10 +52,13 @@ const assembleOutput = document.querySelector("#assemble-output") as HTMLDivElem
 const editorButton = document.querySelector(".js-editor-button") as HTMLButtonElement;
 const menuButton = document.querySelector(".js-show-menu") as HTMLButtonElement;
 
-const DISPLAY_UNCHANGED = -1;
-const DISPLAY_EDITOR = 1;
-const DISPLAY_GRAPHICS = 2;
-let newGraphicsMode = DISPLAY_UNCHANGED;
+enum DISPLAY_MODE {
+	UNCHANGED = -1,
+	EDITOR = 1,
+	GRAPHICS = 2,
+};
+
+let newGraphicsMode = DISPLAY_MODE.UNCHANGED;
 
 graphicsOutPanel.height = GRAPHICS_HEIGHT * PIXEL_HEIGHT;
 graphicsOutPanel.width = GRAPHICS_WIDTH * PIXEL_WIDTH;
@@ -65,7 +68,7 @@ const DASM_IFRAME_ID = "dasm-iframe";
 const editorFlags = {
 	canAssemble: true,
 	canRun: false,
-	displayMode: DISPLAY_EDITOR,
+	displayMode: DISPLAY_MODE.EDITOR,
 };
 
 let biosBin = [] as number[]; // precompile the binary and copy it as needed
@@ -90,7 +93,9 @@ const write6502 = Module.cwrap('write6502', 'void', ['number']);
 const read6502 = Module.cwrap('read6502', 'number', ['void']);
 const reset6502 = Module.cwrap('reset6502', null, ['void']);
 
-let rand = (a: number, b: number) /* min, max inclusive */ => a + (b - a + 1) * crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32 | 0
+let rand = (minInclusive: number, maxInclusive: number) =>
+	minInclusive + (maxInclusive - minInclusive + 1)
+	* crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32 | 0
 
 const writeScreenAddress = (address: number, value: number) => {
 	if (address < 0x200 || address > 0x05FF) {
@@ -107,7 +112,7 @@ const writeScreenAddress = (address: number, value: number) => {
 	ctx.strokeStyle = color;
 
 	ctx.fillRect(w * PIXEL_WIDTH, h * PIXEL_HEIGHT, PIXEL_WIDTH, PIXEL_HEIGHT);
-	newGraphicsMode == DISPLAY_GRAPHICS;
+	newGraphicsMode == DISPLAY_MODE.GRAPHICS;
 }
 
 const fillScreen = () => {
@@ -229,8 +234,8 @@ const create6502 = (lineMappings: LineMappings[]) => {
 				}
 			}
 
-			if (newGraphicsMode !== DISPLAY_GRAPHICS) {
-				newGraphicsMode = DISPLAY_UNCHANGED;
+			if (newGraphicsMode !== DISPLAY_MODE.GRAPHICS) {
+				newGraphicsMode = DISPLAY_MODE.UNCHANGED;
 				showGraphicsButton!.click();
 			}
 
@@ -448,12 +453,12 @@ const wireButtons = () => {
 	});
 
 	showCodeButton!.addEventListener("click", () => {
-		editorFlags.displayMode = DISPLAY_EDITOR;
+		editorFlags.displayMode = DISPLAY_MODE.EDITOR;
 		updateButtons();
 	});
 
 	showGraphicsButton.addEventListener("click", () => {
-		editorFlags.displayMode = DISPLAY_GRAPHICS;
+		editorFlags.displayMode = DISPLAY_MODE.GRAPHICS;
 		updateButtons();
 	});
 
@@ -583,10 +588,10 @@ const updateButtons = () => {
 	}
 
 	switch (editorFlags.displayMode) {
-		case DISPLAY_EDITOR:
+		case DISPLAY_MODE.EDITOR:
 			editorPanel.style.display = "";
 			break;
-		case DISPLAY_GRAPHICS:
+		case DISPLAY_MODE.GRAPHICS:
 			graphicsOutPanel.style.display = "";
 			break;
 	}
@@ -671,11 +676,11 @@ function resizeCanvas() {
 
 const setCanvasAutoScale = () => {
 	window.addEventListener("resize", resizeCanvas);
-	editorFlags.displayMode = DISPLAY_GRAPHICS;
+	editorFlags.displayMode = DISPLAY_MODE.GRAPHICS;
 	updateButtons();
 
 	resizeCanvas();
 
-	editorFlags.displayMode = DISPLAY_EDITOR;
+	editorFlags.displayMode = DISPLAY_MODE.EDITOR;
 	updateButtons();
 };
