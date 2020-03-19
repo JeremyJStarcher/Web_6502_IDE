@@ -17,9 +17,9 @@ GWARN= -ansi -std=c99 -pedantic -Wall \
 
 # WASM_MODE: 0 -> Compile as ASM.js. Can be run from local file system
 # WASM_MODE: 1 -> Compile as WASM. Must be served from webserver
-WEB_DIST=.
+WEB_DIST=build/.
 WEB_NAME=fantasy-console
-S=.
+S=./src
 
 # Set the correct compiler based upon the target
 wasm: CC=emcc -Os
@@ -27,41 +27,36 @@ wasm: WASM_MODE=1
 asmjs: CC=emcc -Os
 asmjs: WASM_MODE=0
 
-OBJS= ${S}/machine.o ${S}/fake6502.o
-SRCS= ${S}/machine.c $[S}/fake6502.c
+OBJS= ${S}/fc-main.o 
+SRCS= ${S}/fc-main.c
 
-EMCC_OBJS= ${OBJS}
-EMCC_SRCS = ${OBJS} 
+EMCC_OBJS= ${OBJS} # wasm_main.o
+EMCC_SRCS = ${OBJS}# wasm_main.c
 
 ALL=dasm 
 
-CMD=$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
 
 all: $(ALL)
 
 dasm: $(OBJS)
 	$(CC) $(OBJS) -o dasm $(LDFLAGS)
 
+EM_CFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 \
+    --preload-file PixelOperatorMono.ttf@/
+
 wasm: $(EMCC_OBJS)
-	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
-	-s INVOKE_RUN=0 \
-	-s NO_EXIT_RUNTIME=1 \
-	-s EXPORTED_FUNCTIONS="['_read6502', '_write6502', '_js_step6502', '_reset6502']" \
-	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
-	--bind \
+	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.html -s WASM=$(WASM_MODE)  \
+	${EM_CFLAGS} \
 	$(LDFLAGS)
 
 asmjs: $(EMCC_OBJS)
-	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
-	-s INVOKE_RUN=0 \
-	-s NO_EXIT_RUNTIME=1 \
-	-s EXPORTED_FUNCTIONS="['_read6502', '_write6502', '_js_step6502', '_reset6502']" \
-	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
-	--bind \
+	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.html -s WASM=$(WASM_MODE)  \
+	${EM_CFLAGS} \
 	$(LDFLAGS)
 
-
 obj: $(OBJS)
+
+$(OBJS): ${S}/fc-main.c
 
 clean:
 	rm -rf ${S}/*.o $(ALL) \
@@ -69,6 +64,8 @@ clean:
 	*.gcda *.gcno *.gcov gmon.out \
 	*.o ${WEB_DIST}/${WEB_NAME}.mjs \
 	*.o ${WEB_DIST}/${WEB_NAME}.js \
+	*.o ${WEB_DIST}/${WEB_NAME}.html \
+	*.o ${WEB_DIST}/${WEB_NAME}.mem \
 	*.o ${WEB_DIST}/${WEB_NAME}.js.mem \
 	*.o ${WEB_DIST}/${WEB_NAME}.data \
 	*.o ${WEB_DIST}/${WEB_NAME}.wasm \

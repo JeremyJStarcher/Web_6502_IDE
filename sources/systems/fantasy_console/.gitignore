@@ -1,3 +1,2 @@
-*.o
-*.js
-*.js.mem
+src/*.o
+build/*

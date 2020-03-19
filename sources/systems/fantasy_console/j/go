@@ -1,6 +1,0 @@
-
-emcc -c console.c -o console.o -s USE_SDL=2
-emcc console.o -o console.html -s USE_SDL=2
-
-http-server
-
