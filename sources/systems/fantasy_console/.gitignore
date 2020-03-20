@@ -1,2 +1,2 @@
-src/*.o
+c_src/*.o
 build/*

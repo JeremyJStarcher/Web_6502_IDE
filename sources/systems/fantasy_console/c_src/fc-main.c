@@ -93,11 +93,8 @@ void mainloop()
     SDL_FreeSurface(surface);
 }
 
-int main(int argc, char **argv)
+int init_system()
 {
-    bool quit = false;
-    SDL_Event event;
-
     if (SDL_Init(SDL_INIT_VIDEO) < 0)
     {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -134,6 +131,12 @@ int main(int argc, char **argv)
         printf("Font could not be created! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
+    return 0;
+}
+
+int main(int argc, char **argv)
+{
+    init_system();
 
     emscripten_set_main_loop(mainloop, 0, 1);
 
