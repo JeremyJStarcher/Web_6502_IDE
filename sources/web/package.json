@@ -10,12 +10,15 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "fix": " rm -rf node_modules/@types/tern; ",
     "clean": "rm -f lib/ts/*.js;",
-    "make2": "tsc --project lib/ts"
+    "make2": "tsc --project lib/ts; rollup -c"
   },
- "author": "Jeremy J Starcher",
+  "author": "Jeremy J Starcher",
   "license": "SEE LICENSE IN LICENSE.TXT",
   "devDependencies": {
     "@types/codemirror": "0.0.87",
+    "rollup": "^2.1.0",
+    "rollup-plugin-typescript": "^1.0.1",
+    "tslib": "^1.11.1",
     "typescript": "^3.8.3"
   }
 }
