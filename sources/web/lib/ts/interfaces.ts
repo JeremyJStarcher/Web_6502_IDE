@@ -72,6 +72,12 @@ interface RunAssemblerRequest extends BaseSendMessageRequest {
     filename: string;
 }
 
+interface RunAssemblerRequest2 extends BaseSendMessageRequest {
+    action: 'runAssembler2';
+    filename: string;
+}
+
+
 interface RunAssemblerResponse extends BaseSendMessageResponse {
     errors: BuildErrors[];
     stdout: string[];
@@ -79,10 +85,11 @@ interface RunAssemblerResponse extends BaseSendMessageResponse {
     binary: number[];
 }
 
-type SendMessageType =
+type BuildEvent = RunAssemblerRequest | RunAssemblerRequest2;
+
+type IOEvent =
     GetFileListRequest |
     ReadBinaryFileRequest |
     UnlinkFileRequest |
     WriteTextFileRequest |
-    RunAssemblerRequest |
     ReadTextFileRequest;
