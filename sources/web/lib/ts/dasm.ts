@@ -1,4 +1,5 @@
-import common from "./common.js";
+import fileXfer from "./common/file-xfer";
+import { ORIGIN } from "./common/host-origin";
 
 declare const Module: any;
 const stdOut: string[] = [];
@@ -55,7 +56,7 @@ const runAssemblerEvent = (request: RunAssemblerRequest) => {
         messageID: request.messageID,
     };
 
-    parent.postMessage(JSON.stringify(response), common.ORIGIN);
+    parent.postMessage(JSON.stringify(response), ORIGIN);
 };
 
 const assertNever = (x: never): never => {
@@ -65,7 +66,7 @@ const assertNever = (x: never): never => {
 }
 
 const buildEventListener = function (e: MessageEvent) {
-    if (e.origin === common.ORIGIN) {
+    if (e.origin === ORIGIN) {
         const request = JSON.parse(e.data) as BuildEvent;
 
         switch (request.action) {
@@ -85,7 +86,7 @@ const buildEventListener = function (e: MessageEvent) {
 window.addEventListener('message', buildEventListener, false);
 
 (window as any).dasm_main = () => {
-    common.sendPong(parent);
+    fileXfer.sendPong(parent);
 };
 
 // Note:

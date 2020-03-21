@@ -1,6 +1,7 @@
 declare const Module: any;
 
-import common from "./common";
+import fileXfer from "./common/file-xfer";
+import {ORIGIN} from "./common/host-origin";
 
 import route from "./route.js";
 import { editor } from "./editor.js";
@@ -341,7 +342,7 @@ const loadDasmIFrame = async () => {
 
 	document.body.appendChild(dasmIframe);
 
-	await common.waitForPong();
+	await fileXfer.waitForPong();
 
 	return dasmIframe.contentWindow!;
 };
@@ -352,20 +353,20 @@ const assemble = async (
 	src: string) => {
 	route.gotoSection("wait");
 
-	const sendmessagereply = await common.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(cw, {
+	const sendmessagereply = await fileXfer.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(cw, {
 		messageID: 0,
 		action: 'writeFile',
 		filename: `${filename}.asm`,
 		contents: src,
 	});
 
-	await common.sendMessage<UnlinkFileRequest, UnlinkFileResponse>(cw, {
+	await fileXfer.sendMessage<UnlinkFileRequest, UnlinkFileResponse>(cw, {
 		messageID: 0,
 		action: 'unlinkFile',
 		filename: `${filename}.bin`,
 	});
 
-	const assembleResult = await common.sendMessage<RunAssemblerRequest, RunAssemblerResponse>(cw, {
+	const assembleResult = await fileXfer.sendMessage<RunAssemblerRequest, RunAssemblerResponse>(cw, {
 		messageID: 0,
 		action: 'runAssembler',
 		filename: `${filename}`,
@@ -607,7 +608,7 @@ const onCodeChange = () => {
 const buildBios = async (cw: Window) => {
 	const workFile = "/tmp_bios";
 
-	const filereadResult = await common.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
+	const filereadResult = await fileXfer.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
 		messageID: 0,
 		action: 'readTextFile',
 		filename: `/asm/bios.asm`,
@@ -615,7 +616,7 @@ const buildBios = async (cw: Window) => {
 
 	const src = filereadResult.contents;
 
-	await common.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(cw, {
+	await fileXfer.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(cw, {
 		messageID: 0,
 		action: 'writeFile',
 		filename: `${workFile}.asm`,

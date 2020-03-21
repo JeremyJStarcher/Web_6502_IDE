@@ -1,11 +1,8 @@
 declare const FS: any;
 
-let messageCounter = 1000;
+import { ORIGIN } from "./host-origin";
 
-const ORIGIN = (() => {
-    var b = window.location.href.split("/");
-    return [b[0], b[1], b[2]].join("/");
-})();
+let messageCounter = 1000;
 
 const TYPE_FILE = 'F';
 const TYPE_DIR = 'D';
@@ -180,7 +177,6 @@ const ioEventListener = function (e: MessageEvent) {
 window.addEventListener('message', ioEventListener, false);
 
 export default {
-    ORIGIN,
     sendMessage,
     waitForPong,
     sendPong,

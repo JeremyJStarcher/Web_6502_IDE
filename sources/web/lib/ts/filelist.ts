@@ -1,4 +1,4 @@
-import common from "./common.js";
+import fileXfer from "./common/file-xfer";
 
 interface PickFileResult {
     filename: string;
@@ -13,7 +13,7 @@ export const fileList = (() => {
         const container = document.querySelector(".filelist") as HTMLElement;
         container.innerHTML = "";
 
-        const reply = await common.sendMessage<GetFileListRequest, GetFileListResponse>
+        const reply = await fileXfer.sendMessage<GetFileListRequest, GetFileListResponse>
             (cw, {
                 action: 'getFileList',
                 dir: dir,
@@ -42,9 +42,9 @@ export const fileList = (() => {
                 if (reply.files) {
                     const d = reply.files.filter((a) => a.fullPath === thisname)[0];
 
-                    if (d.type === common.TYPE_FILE) {
+                    if (d.type === fileXfer.TYPE_FILE) {
 
-                        const selectedFileResult = await common.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
+                        const selectedFileResult = await fileXfer.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
                             action: 'readTextFile',
                             messageID: 0,
                             filename: thisname,
