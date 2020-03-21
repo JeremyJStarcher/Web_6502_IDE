@@ -3,3 +3,6 @@ all:
 
 clean:
 	npm run clean
+
+run:
+	cd ../..; make run
