@@ -60,7 +60,7 @@
 
     const list = Array.from(document.querySelectorAll(".js-wasm-mode"));
     list.forEach(el => {
-        const text = wasmFlag.WASM_FLAG ? "WASM" : "ASM.js";
+        const text = wasmFlag ? "WASM" : "ASM.js";
         el.innerHTML = `[Current mode: ${text}]`;
     });
 

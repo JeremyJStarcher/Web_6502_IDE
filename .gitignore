@@ -25,6 +25,3 @@ sources/dasm/ftohex
 sources/web_dasm/*.o
 sources/web_dasm/dasm-exe.*
 
-
-
-

@@ -64,41 +64,29 @@ EMCC_SRCS = ${OBJS} wasm_main.c
 
 ALL=dasm 
 
-CMD=$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
-	-s INVOKE_RUN=0 \
-	-s NO_EXIT_RUNTIME=1 \
-	-s EXPORTED_FUNCTIONS="['_main', '_wasm_main']" \
-	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
-	--bind \
-	--preload-file ../../sources/web/asm@/asm \
-	$(LDFLAGS)
-
-
 all: $(ALL)
 
 dasm: $(OBJS)
 	$(CC) $(OBJS) -o dasm $(LDFLAGS)
 
 
-
-wasm: $(EMCC_OBJS)
-	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
+EM_CFLAGS= \
+	-s WASM=$(WASM_MODE)  \
 	-s INVOKE_RUN=0 \
 	-s NO_EXIT_RUNTIME=1 \
 	-s EXPORTED_FUNCTIONS="['_main', '_wasm_main']" \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
 	--bind \
 	--preload-file ../../sources/web/asm@/asm \
+
+wasm: $(EMCC_OBJS)
+	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js \
+	${EM_CFLAGS} \
 	$(LDFLAGS)
 
 asmjs: $(EMCC_OBJS)
-	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
-	-s INVOKE_RUN=0 \
-	-s NO_EXIT_RUNTIME=1 \
-	-s EXPORTED_FUNCTIONS="['_main', '_wasm_main']" \
-	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
-	--bind \
-	--preload-file ../../sources/web/asm@/asm \
+	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js \
+	${EM_CFLAGS} \
 	$(LDFLAGS)
 
 obj: $(OBJS)
@@ -107,11 +95,10 @@ $(OBJS): ${S}/asm.h
 
 clean:
 	rm -rf ${S}/*.o $(ALL) \
-	dasm-alpha-*.tar.gz \
-	*.gcda *.gcno *.gcov gmon.out \
-	*.o ${WEB_DIST}/${WEB_NAME}.mjs \
-	*.o ${WEB_DIST}/${WEB_NAME}.js \
-	*.o ${WEB_DIST}/${WEB_NAME}.js.mem \
-	*.o ${WEB_DIST}/${WEB_NAME}.data \
-	*.o ${WEB_DIST}/${WEB_NAME}.wasm \
-	*.o ${WEB_DIST}/${WEB_NAME}.data
+	*.o \
+	${WEB_DIST}/${WEB_NAME}.mjs \
+	${WEB_DIST}/${WEB_NAME}.js \
+	${WEB_DIST}/${WEB_NAME}.js.mem \
+	${WEB_DIST}/${WEB_NAME}.data \
+	${WEB_DIST}/${WEB_NAME}.wasm \
+	${WEB_DIST}/${WEB_NAME}.data

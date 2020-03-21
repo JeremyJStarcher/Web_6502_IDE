@@ -63,13 +63,12 @@ $(OBJS): ${S}/fc-main.c
 
 clean:
 	rm -rf ${S}/*.o $(ALL) \
-	dasm-alpha-*.tar.gz \
-	*.gcda *.gcno *.gcov gmon.out \
 	${WEB_DIST}/${WEB_NAME}.mjs \
 	${WEB_DIST}/${WEB_NAME}.js \
 	${WEB_DIST}/${WEB_NAME}.html \
 	${WEB_DIST}/${WEB_NAME}.mem \
 	${WEB_DIST}/${WEB_NAME}.js.mem \
+	${WEB_DIST}/${WEB_NAME}.html.mem \
 	${WEB_DIST}/${WEB_NAME}.data \
 	${WEB_DIST}/${WEB_NAME}.wasm \
 	${WEB_DIST}/${WEB_NAME}.data
