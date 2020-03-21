@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "fix": " rm -rf node_modules/@types/tern; ",
-    "clean": "rm -f lib/ts/*.js;",
+    "clean": "(cd lib/ts; rm -f *.js *.map *.d.ts);",
     "make2": "tsc --project lib/ts; rollup -c"
   },
   "author": "Jeremy J Starcher",

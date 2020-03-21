@@ -8,6 +8,6 @@ export default {
 	output: {
 		sourcemap: "./lib/ts/bundle.js.map",
 		file: './lib/ts/bundle.js',
-		format: 'cjs'
+		format: 'es'
 	},
 }

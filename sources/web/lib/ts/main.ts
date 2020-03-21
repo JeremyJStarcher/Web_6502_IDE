@@ -1,6 +1,8 @@
 declare const Module: any;
 
-import common from "./common.js";
+ import common from "./common";
+
+//import common from "common.js";
 import route from "./route.js";
 import { editor } from "./editor.js";
 import { fileList } from "./filelist.js";
