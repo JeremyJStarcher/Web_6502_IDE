@@ -617,7 +617,7 @@ window.main_init = async () => {
 
 		const cw = await loadDasmIFrame();
 
-		fileList.pickFile(cw, "/asm/examples", (file) => {
+		fileList.pickFile(cw, "/examples", (file) => {
 			route.gotoSection("editor");
 
 			editor.setValue(file.contents);

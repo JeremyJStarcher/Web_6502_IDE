@@ -611,7 +611,7 @@ const buildBios = async (cw: Window) => {
 	const filereadResult = await fileXfer.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
 		messageID: 0,
 		action: 'readTextFile',
-		filename: `/asm/bios.asm`,
+		filename: `/bios.asm`,
 	});
 
 	const src = filereadResult.contents;
@@ -651,7 +651,7 @@ const buildBios = async (cw: Window) => {
 
 		const cw = await loadDasmIFrame();
 
-		fileList.pickFile(cw, "/asm/examples", (file) => {
+		fileList.pickFile(cw, "/examples", (file) => {
 			route.gotoSection("editor");
 
 			editor.setValue(file.contents);

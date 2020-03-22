@@ -77,7 +77,8 @@ EM_CFLAGS= \
 	-s EXPORTED_FUNCTIONS="['_main']" \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['callMain', 'ccall', 'cwrap']" \
 	--bind \
-	--preload-file ../../sources/web/asm@/asm \
+	--preload-file ../systems/fantasy_console/examples@/examples \
+	--preload-file ../systems/fantasy_console/asm/bios.asm@/bios.asm
 
 wasm: $(EMCC_OBJS)
 	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js \

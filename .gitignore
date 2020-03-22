@@ -1,17 +1,17 @@
 dist/asmjs/
 dist/wasm/
 
-sources/web/lib/ts/*.js
-sources/web/lib/ts/*.map
-sources/web/lib/ts/*.js.map
-sources/web/lib/ts/*.d.ts
+sources/ide/lib/ts/*.js
+sources/ide/lib/ts/*.map
+sources/ide/lib/ts/*.js.map
+sources/ide/lib/ts/*.d.ts
 
 sources/ts_common/*.js
 sources/ts_common/*.map
 sources/ts_common/*.js.map
 sources/ts_common/*.d.ts
 
-sources/web/node_modules/
+sources/ide/node_modules/
 
 sources/systems/fantasy_console/c_src/*.o
 sources/systems/fantasy_console/build/*
