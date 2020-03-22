@@ -33,12 +33,9 @@ SRCS= ${S}/fc-main.c
 EMCC_OBJS= ${OBJS} # wasm_main.o
 EMCC_SRCS = ${OBJS}# wasm_main.c
 
-ALL=dasm 
-
-all: $(ALL)
-
-dasm: $(OBJS)
-	$(CC) $(OBJS) -o dasm $(LDFLAGS)
+all: 
+	echo "'wasm' or 'asmjs'?"
+	false
 
 EM_CFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 \
     --preload-file PixelOperatorMono.ttf@/ \
@@ -47,15 +44,19 @@ EM_CFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 \
 	-s EXPORTED_FUNCTIONS="['_main', '_init_system', '_mainloop']" \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
 
-wasm: $(EMCC_OBJS)
+wasm: $(EMCC_OBJS) scripts
 	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
 	${EM_CFLAGS} \
 	$(LDFLAGS)
 
-asmjs: $(EMCC_OBJS)
+asmjs: $(EMCC_OBJS) scripts
 	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
 	${EM_CFLAGS} \
 	$(LDFLAGS)
+
+scripts:
+	npm run make2
+	cp ts/fc-bundle.* build
 
 obj: $(OBJS)
 
@@ -72,3 +73,5 @@ clean:
 	${WEB_DIST}/${WEB_NAME}.data \
 	${WEB_DIST}/${WEB_NAME}.wasm \
 	${WEB_DIST}/${WEB_NAME}.data
+	npm run clean
+	(rm build/fc-bundle.*; true)

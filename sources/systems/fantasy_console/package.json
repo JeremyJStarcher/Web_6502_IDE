@@ -1,0 +1,21 @@
+{
+  "name": "fantasy_console",
+  "version": "0.0.1",
+  "description": "6502 Fantasy Console",
+  "main": "index.js",
+  "dependencies": {
+    "rollup": "^2.1.0",
+    "tslib": "^1.11.1",
+    "rollup-plugin-typescript": "^1.0.1",
+    "typescript": "^3.8.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "fix": " rm -rf node_modules/@types/tern; ",
+    "clean": "(cd ts; rm -f *.js *.map *.d.ts);",
+    "make2": "tsc --project ts; rollup -c"
+  },
+  "author": "Jeremy J Starcher",
+  "license": "SEE LICENCE IN FILE"
+}

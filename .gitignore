@@ -30,3 +30,11 @@ sources/dasm/ftohex
 sources/web_dasm/*.o
 sources/web_dasm/dasm-exe.*
 
+sources/systems/fantasy_console/node_modules
+
+sources/systems/fantasy_console/ts/*.js
+sources/systems/fantasy_console/ts/*.map
+sources/systems/fantasy_console/ts/*.js.map
+sources/systems/fantasy_console/ts/*.d.ts
+
+

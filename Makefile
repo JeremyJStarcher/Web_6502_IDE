@@ -13,6 +13,7 @@ all:
 build:
 	rm -rf ${IDEST}
 	mkdir -p ${IDEST}/font
+	mkdir -p ${IDEST}/systems
 	mkdir -p ${ILIB}
 	mkdir -p ${ILIB}/ts
 
@@ -20,6 +21,8 @@ build:
 
 	cd sources/web_dasm && make clean ${MODE}
 	cd sources/v6502 && make clean ${MODE}
+	cd sources/systems/fantasy_console && make clean ${MODE}
+
 	cd sources/web && make clean all 
 
 	cp sources/web/*.html ${IDEST}
@@ -34,9 +37,10 @@ build:
 	cp sources/web/lib/ts/dasm-bundle.*  ${ILIB}/ts 
 	cp sources/web_dasm/dasm-exe.*  ${IDEST} 
 
-	
 	cp sources/web/lib/ts/main-bundle.*  ./${ILIB}/ts 
 	cp sources/v6502/v6502.*  ./${IDEST} 
+	mkdir -p ${IDEST}/systems/fantasy-console
+	cp -r sources/systems/fantasy_console/build/* ${IDEST}/systems/fantasy-console
 	
 asmjs:	build
 wasm:	build
