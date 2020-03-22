@@ -10,6 +10,11 @@ all:
 
 .PHONY: build wasm asmjs
 
+init:
+	cd sources/web && npm ci && npm run fix
+	cd sources/systems/fantasy_console && npm ci && npm run fix
+
+
 build:
 	rm -rf ${IDEST}
 	mkdir -p ${IDEST}/font
