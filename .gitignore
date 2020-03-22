@@ -26,6 +26,8 @@ sources/dasm/test/**/*.list.txt
 sources/dasm/bin
 sources/dasm/dasm
 sources/dasm/ftohex
+sources/dasm/src/dasm
+sources/dasm/src/ftohex
 
 sources/web_dasm/*.o
 sources/web_dasm/dasm-exe.*
@@ -37,4 +39,5 @@ sources/systems/fantasy_console/ts/*.map
 sources/systems/fantasy_console/ts/*.js.map
 sources/systems/fantasy_console/ts/*.d.ts
 
+bin/dasm
 
