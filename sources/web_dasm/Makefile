@@ -49,9 +49,9 @@ WEB_NAME=dasm-exe
 S=../dasm/src
 
 # Set the correct compiler based upon the target
-wasm: CC=emcc -Os
+wasm: CC=emcc -O0
 wasm: WASM_MODE=1
-asmjs: CC=emcc -Os
+asmjs: CC=emcc -O0
 asmjs: WASM_MODE=0
 
 OBJS= ${S}/main.o ${S}/ops.o ${S}/globals.o ${S}/exp.o ${S}/symbols.o \
@@ -59,8 +59,8 @@ OBJS= ${S}/main.o ${S}/ops.o ${S}/globals.o ${S}/exp.o ${S}/symbols.o \
 SRCS= ${S}/main.c ${S}/ops.c ${S}/globals.c${S}/ exp.c ${S}/symbols.c \
       ${S}/mne6303.c ${S}/mne6502.c ${S}/mne68705.c ${S}/mne6811.c ${S}/mnef8.c
 
-EMCC_OBJS= ${OBJS} wasm_main.o
-EMCC_SRCS = ${OBJS} wasm_main.c
+EMCC_OBJS= ${OBJS} #wasm_main.o
+EMCC_SRCS = ${OBJS} #wasm_main.c
 
 ALL=dasm 
 
@@ -69,13 +69,13 @@ all: $(ALL)
 dasm: $(OBJS)
 	$(CC) $(OBJS) -o dasm $(LDFLAGS)
 
+	#-s NO_EXIT_RUNTIME=1 \
 
 EM_CFLAGS= \
 	-s WASM=$(WASM_MODE)  \
 	-s INVOKE_RUN=0 \
-	-s NO_EXIT_RUNTIME=1 \
-	-s EXPORTED_FUNCTIONS="['_main', '_wasm_main']" \
-	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
+	-s EXPORTED_FUNCTIONS="['_main']" \
+	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['callMain', 'ccall', 'cwrap']" \
 	--bind \
 	--preload-file ../../sources/web/asm@/asm \
 

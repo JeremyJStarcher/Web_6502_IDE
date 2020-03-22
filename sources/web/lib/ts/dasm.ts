@@ -31,15 +31,17 @@ const stdoutToError = (stdout: string[]) => {
 
 const runAssemblerEvent = (request: RunAssemblerRequest) => {
     const outputformat = 2;
-    const types = ['string', 'integer'];
-    const args = [request.filename, outputformat];
 
-    const result = Module.ccall(
-        'wasm_main',	// name of C function
-        null,	// return type
-        types,	// argument types
-        args,
-    );
+    const zargs = [
+        `${request.filename}.asm`,
+        `-o${request.filename}.bin`,
+        `-l${request.filename}.lst`,
+        `-s${request.filename}.sym`,
+        `-E2`,
+        `-f${outputformat}`,
+    ];
+
+    Module.callMain(zargs);
 
     const listing = FS.readFile(`${request.filename}.lst`, { encoding: "utf8" });
     const typedBin = FS.readFile(`${request.filename}.bin`);

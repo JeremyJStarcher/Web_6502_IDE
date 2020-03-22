@@ -64,12 +64,15 @@ const runAssemblerEvent = (data, reply) => {
     const types = ['string', 'integer'];
     const args = [data.filename, outputformat];
 
-    const result = Module.ccall(
-        'wasm_main',	// name of C function
-        null,	// return type
-        types,	// argument types
-        args,
-    );
+    // const result = Module.ccall(
+    //    'wasm_main',	// name of C function
+    //    null,	// return type
+    //    types,	// argument types
+    //    args,
+    // );
+
+
+    Module.run();
 
     const listing = FS.readFile(`${data.filename}.lst`, { encoding: "utf8" });
     const bin = FS.readFile(`${data.filename}.bin`);

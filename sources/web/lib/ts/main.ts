@@ -606,7 +606,7 @@ const onCodeChange = () => {
 };
 
 const buildBios = async (cw: Window) => {
-	const workFile = "/tmp_bios";
+	const workFile = "/bios";
 
 	const filereadResult = await fileXfer.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
 		messageID: 0,
