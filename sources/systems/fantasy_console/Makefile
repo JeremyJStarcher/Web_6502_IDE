@@ -17,7 +17,7 @@ GWARN= -ansi -std=c99 -pedantic -Wall \
 
 # WASM_MODE: 0 -> Compile as ASM.js. Can be run from local file system
 # WASM_MODE: 1 -> Compile as WASM. Must be served from webserver
-WEB_DIST=build/.
+WEB_DIST=build
 WEB_NAME=fantasy-console
 S=./c_src
 
@@ -37,6 +37,9 @@ all:
 	echo "'wasm' or 'asmjs'?"
 	false
 
+rom:  
+	../../../bin/dasm asm/bios.asm -f2 -oasm/bios.rom
+
 EM_CFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 \
     --preload-file PixelOperatorMono.ttf@/ \
 	-s INVOKE_RUN=0 \
@@ -44,12 +47,12 @@ EM_CFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 \
 	-s EXPORTED_FUNCTIONS="['_main', '_init_system', '_mainloop']" \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
 
-wasm: $(EMCC_OBJS) scripts
+wasm: $(EMCC_OBJS) scripts rom
 	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
 	${EM_CFLAGS} \
 	$(LDFLAGS)
 
-asmjs: $(EMCC_OBJS) scripts
+asmjs: $(EMCC_OBJS) scripts rom
 	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
 	${EM_CFLAGS} \
 	$(LDFLAGS)
@@ -63,7 +66,7 @@ obj: $(OBJS)
 $(OBJS): ${S}/fc-main.c
 
 clean:
-	rm -rf ${S}/*.o $(ALL) \
+	-rm -rf ${S}/*.o $(ALL) \
 	${WEB_DIST}/${WEB_NAME}.mjs \
 	${WEB_DIST}/${WEB_NAME}.js \
 	${WEB_DIST}/${WEB_NAME}.html \
@@ -72,6 +75,7 @@ clean:
 	${WEB_DIST}/${WEB_NAME}.html.mem \
 	${WEB_DIST}/${WEB_NAME}.data \
 	${WEB_DIST}/${WEB_NAME}.wasm \
-	${WEB_DIST}/${WEB_NAME}.data
+	${WEB_DIST}/${WEB_NAME}.data \
+	asm/bios.rom
 	npm run clean
-	(rm build/fc-bundle.*; true)
+	-rm build/fc-bundle.*
