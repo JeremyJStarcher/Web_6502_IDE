@@ -10,6 +10,7 @@
       font-family: arial;
       margin: 0;
       padding: none;
+      overflow: hidden;
     }
 
     .emscripten {
@@ -143,9 +144,9 @@
 
 <body>
   <div class="spinner" id='spinner'></div>
-  <div class="emscripten" id="status">Downloading...</div>
+  <div style="display: none" class="emscripten" id="status">Downloading...</div>
 
-  <span id='controls'>
+  <span style="display: none" id='controls'>
     <span><input type="checkbox" id="resize">Resize canvas</span>
     <span><input type="checkbox" id="pointerLock" checked>Lock/hide mouse pointer &nbsp;&nbsp;&nbsp;</span>
     <span><input type="button" value="Fullscreen"
@@ -159,10 +160,10 @@
   </div>
 
 
-  <div class="emscripten_border">
-    <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+  <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+  <div style="display: none" class="emscripten_border">
   </div>
-  <textarea id="output" rows="8"></textarea>
+  <textarea style="display: none" id="output" rows="8"></textarea>
 
   <script type='text/javascript'>
     var statusElement = document.getElementById('status');
@@ -175,10 +176,14 @@
 
       init();
 
+      let rundownTimer = 1000;
       function doit() {
         requestAnimationFrame(function () {
-          mainloop();
-          doit();
+          if (rundownTimer) {
+            rundownTimer -= 1;
+            mainloop();
+            doit();
+          }
         });
       }
 

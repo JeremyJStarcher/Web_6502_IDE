@@ -76,6 +76,9 @@
 				<textarea class="editor"></textarea>
 				<canvas class="graphics-out"></canvas>
 			</div>
+			<div class="system">
+				<iframe id="system-iframe" src="systems/fantasy-console/fc.html"> </iframe>
+			</div>
 			<div class="footer">
 				<textarea style="display:none" class="emscripten" id="output" readonly></textarea>
 				<div id="assemble-output"></div>
@@ -186,6 +189,18 @@
 			Module.setStatus = function (text) {
 				if (text) Module.printErr('[post-exception status] ' + text);
 			};
+		};
+
+		window.GET_IFRAME_SIZE = () => {
+			const parent = document.querySelector(".system");
+			// The systems iframe needs this to calculate its size properly
+			const iframe = document.querySelector("#system-iframe");
+
+			iframe.width = parent.offsetWidth;
+			iframe.height = parent.offsetHeight;
+
+			const res = { width: iframe.offsetWidth, height: iframe.offsetHeight };
+			return res;
 		};
 	</script>
 
