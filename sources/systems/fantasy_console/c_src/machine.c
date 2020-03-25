@@ -114,7 +114,7 @@ void boot_machine()
 	fseek(f, 0, SEEK_SET);
 
 	// Allocate memory
-	buffer = (char *)malloc(fileLen + 1);
+	buffer = (unsigned char *)malloc(fileLen + 1);
 	if (!buffer)
 	{
 		fprintf(stderr, "Memory error!");
