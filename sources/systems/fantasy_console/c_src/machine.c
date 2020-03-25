@@ -87,8 +87,6 @@ void bin_to_ram(unsigned char *stream, int bufz)
 			unsigned int offset = address + j;
 			unsigned int b = stream[i];
 
-			printf("$%04X:$%02X\n", address, b);
-
 			write6502(offset, b);
 			i += 1;
 		}
