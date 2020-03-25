@@ -3,20 +3,43 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #include <emscripten.h>
 
 #include "machine.h"
 
-
-
 SDL_Window *window;
 SDL_Renderer *renderer;
 TTF_Font *font;
 
-const int CANVAS_WIDTH = 1000;
-const int CANVAS_HEIGHT = 500;
+const int PIXEL_WIDTH = 16;
+const int PIXEL_HEIGHT = 16;
+const int GRAPHICS_HEIGHT = 32;
+const int GRAPHICS_WIDTH = 32;
+
+const int CANVAS_WIDTH = PIXEL_WIDTH * GRAPHICS_WIDTH;
+const int CANVAS_HEIGHT = PIXEL_HEIGHT * GRAPHICS_HEIGHT;
 const int BYTES_PER_PIXEL = 4;
+
+uint8_t palette[16][3] = {
+    {0x00, 0x00, 0x00},
+    {0xff, 0xff, 0xff},
+    {0x88, 0x00, 0x00},
+    {0xaa, 0xff, 0xee},
+    {0xcc, 0x44, 0xcc},
+    {0x00, 0xcc, 0x55},
+    {0x00, 0x00, 0xaa},
+    {0xee, 0xee, 0x77},
+    {0xdd, 0x88, 0x55},
+    {0x66, 0x44, 0x00},
+    {0xff, 0x77, 0x77},
+    {0x33, 0x33, 0x33},
+    {0x77, 0x77, 0x77},
+    {0xaa, 0xff, 0x66},
+    {0x00, 0x88, 0xff},
+    {0xbb, 0xbb, 0xbb},
+};
 
 void drawLines()
 {
@@ -90,6 +113,30 @@ void mainloop()
     int texH = 0;
     SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
     SDL_Rect dstrect = {0, 0, texW, texH};
+
+    // Copy the screen RAM over
+    for (uint16_t dd = 0x0200; dd < 0x5FF; dd++)
+    {
+        uint8_t value = read6502(dd);
+        uint16_t address = dd - 0x0200;
+
+        int x = floor(address % GRAPHICS_WIDTH);
+        int y = floor(address / GRAPHICS_WIDTH);
+
+        int r1 = palette[value & 0x0F][0];
+        int g1 = palette[value & 0x0F][1];
+        int b1 = palette[value & 0x0F][2];
+
+        SDL_SetRenderDrawColor(renderer, r1, g1, b1, SDL_ALPHA_OPAQUE);
+
+        SDL_Rect rect;
+        rect.x = x * PIXEL_WIDTH;
+        rect.y = y * PIXEL_WIDTH;
+        rect.w = PIXEL_WIDTH;
+        rect.h = PIXEL_WIDTH;
+
+        SDL_RenderFillRect(renderer, &rect);
+    }
 
     SDL_RenderCopy(renderer, texture, NULL, &dstrect);
     SDL_RenderPresent(renderer);
