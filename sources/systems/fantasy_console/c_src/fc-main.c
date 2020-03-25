@@ -4,7 +4,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "emscripten.h"
+#include <emscripten.h>
+
+#include "machine.h"
+
+
 
 SDL_Window *window;
 SDL_Renderer *renderer;
@@ -131,6 +135,9 @@ int init_system()
         printf("Font could not be created! SDL_Error: %s\n", SDL_GetError());
         return 1;
     }
+
+    boot_machine();
+
     return 0;
 }
 

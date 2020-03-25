@@ -65,3 +65,67 @@ void js_step6502(uint16_t *buf, int len)
 		lastMode = 0;
 	}
 }
+
+void bin_to_ram(unsigned char *stream, int bufz)
+{
+	// The stream format we choose for this project has the following format:
+	// Chunk format, may be repeated multiple times
+	// Address:  <LSB> <MSB>
+	// Length:   <LSB <MSB>
+	// Data:     <BYTE>....
+
+	int i = 0;
+	while (i < bufz)
+	{
+		unsigned int address = (stream[i + 1] * 256) + stream[i];
+		i += 2;
+		unsigned int len = (stream[i + 1] * 256) + stream[i];
+		i += 2;
+
+		for (int j = 0; j < len; j++)
+		{
+			unsigned int offset = address + j;
+			unsigned int b = stream[i];
+
+			printf("$%04X:$%02X\n", address, b);
+
+			write6502(offset, b);
+			i += 1;
+		}
+	}
+}
+
+void boot_machine()
+{
+	reset6502();
+
+	FILE *f = fopen("/bios.rom", "rb");
+	if (f == NULL)
+	{
+		printf("Could not load BIOS file\n");
+		exit(1);
+	}
+
+	unsigned char *buffer;
+
+	fseek(f, 0, SEEK_END);
+	int fileLen = ftell(f);
+
+	fseek(f, 0, SEEK_SET);
+
+	// Allocate memory
+	buffer = (char *)malloc(fileLen + 1);
+	if (!buffer)
+	{
+		fprintf(stderr, "Memory error!");
+		fclose(f);
+		return;
+	}
+
+	//Read file contents into buffer
+	int sizeRead = fread(buffer, fileLen, 1, f);
+	fclose(f);
+
+	bin_to_ram(buffer, fileLen);
+	free(buffer);
+}

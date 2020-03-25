@@ -15,3 +15,5 @@ void js_step6502(uint16_t *buf, int len);
 uint8_t read6502(uint16_t address);
 void write6502(uint16_t address, uint8_t value);
 void testrun();
+void boot_machine();
+void bin_to_ram(unsigned char *stream, int bufz);

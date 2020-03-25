@@ -27,8 +27,9 @@ wasm: WASM_MODE=1
 asmjs: CC=emcc -O0
 asmjs: WASM_MODE=0
 
-OBJS= ${S}/fc-main.o 
-SRCS= ${S}/fc-main.c
+OBJS= ${S}/fc-main.o  ${S}/machine.o ${S}/fake6502.o
+SRCS= ${S}/fc-main.c ${S}/machine.c ${S}/fake6502.c
+$(OBJS): ${S}/fc-main.c ${S}/machine.c ${S}/fake6502.c
 
 EMCC_OBJS= ${OBJS} # wasm_main.o
 EMCC_SRCS = ${OBJS}# wasm_main.c
@@ -37,6 +38,9 @@ all:
 	echo "'wasm' or 'asmjs'?"
 	false
 
+run:
+	(cd ../../../; make run)
+
 rom:  
 	../../../bin/dasm asm/bios.asm -f2 -oasm/bios.rom
 
@@ -44,8 +48,9 @@ EM_CFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 \
     --preload-file PixelOperatorMono.ttf@/ \
 	-s INVOKE_RUN=0 \
 	-s NO_EXIT_RUNTIME=1 \
-	-s EXPORTED_FUNCTIONS="['_main', '_init_system', '_mainloop']" \
+	-s EXPORTED_FUNCTIONS="['_main', '_init_system', '_mainloop', '_boot_machine']" \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
+	--preload-file asm/bios.rom@/bios.rom
 
 wasm: $(EMCC_OBJS) scripts rom
 	$(CC) $(EMCC_OBJS) -o ${WEB_DIST}/${WEB_NAME}.js -s WASM=$(WASM_MODE)  \
@@ -63,7 +68,6 @@ scripts:
 
 obj: $(OBJS)
 
-$(OBJS): ${S}/fc-main.c
 
 clean:
 	-rm -rf ${S}/*.o $(ALL) \
