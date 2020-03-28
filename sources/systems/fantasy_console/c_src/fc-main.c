@@ -93,10 +93,23 @@ void drawRandomPixels()
 
 void mainloop()
 {
+    static bool break_flag = false;
+
     static bool flippy = true;
     SDL_Color color = {255, 255, 255};
     SDL_Surface *surface;
 
+    for (int i = 0; i < 200; i++)
+    {
+        step6502();
+
+        if (read6502(pc) == 0x00) {
+            printf("BREAK FLAG %04X\n", pc);
+            break_flag = true;
+        }
+    }
+
+#if 0
     if (flippy)
     {
         surface = TTF_RenderText_Solid(font, "The land of the McDonald.", color);
@@ -113,9 +126,10 @@ void mainloop()
     int texH = 0;
     SDL_QueryTexture(texture, NULL, NULL, &texW, &texH);
     SDL_Rect dstrect = {0, 0, texW, texH};
+#endif
 
     // Copy the screen RAM over
-    for (uint16_t dd = 0x0200; dd < 0x5FF; dd++)
+    for (uint16_t dd = 0x0200; dd <= 0x5FF; dd++)
     {
         uint8_t value = read6502(dd);
         uint16_t address = dd - 0x0200;
@@ -138,10 +152,10 @@ void mainloop()
         SDL_RenderFillRect(renderer, &rect);
     }
 
-    SDL_RenderCopy(renderer, texture, NULL, &dstrect);
+    // SDL_RenderCopy(renderer, texture, NULL, &dstrect);
     SDL_RenderPresent(renderer);
-    SDL_DestroyTexture(texture);
-    SDL_FreeSurface(surface);
+    // SDL_DestroyTexture(texture);
+    // SDL_FreeSurface(surface);
 }
 
 int init_system()
@@ -184,6 +198,7 @@ int init_system()
     }
 
     boot_machine();
+    reset6502();
 
     return 0;
 }

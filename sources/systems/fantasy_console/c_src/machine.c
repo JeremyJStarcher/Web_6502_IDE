@@ -95,6 +95,11 @@ void bin_to_ram(unsigned char *stream, int bufz)
 
 void boot_machine()
 {
+	// for (uint16_t i = 0; i <= 0xFFFF; i++)
+	// {
+	//    write6502(i, 0);
+	// }
+
 	reset6502();
 
 	FILE *f = fopen("/bios.rom", "rb");
