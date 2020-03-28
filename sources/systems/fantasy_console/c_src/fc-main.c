@@ -22,6 +22,13 @@ const int CANVAS_WIDTH = PIXEL_WIDTH * GRAPHICS_WIDTH;
 const int CANVAS_HEIGHT = PIXEL_HEIGHT * GRAPHICS_HEIGHT;
 const int BYTES_PER_PIXEL = 4;
 
+//6502 CPU registers
+extern uint16_t pc;
+extern uint8_t sp, a, x, y, status;
+
+const uint8_t OP_RTS = 0x60;
+const uint16_t BASE_STACK = 0x0100;
+
 uint8_t palette[16][3] = {
     {0x00, 0x00, 0x00},
     {0xff, 0xff, 0xff},
@@ -95,18 +102,30 @@ void mainloop()
 {
     static bool break_flag = false;
 
+    if (break_flag)
+    {
+        return;
+    }
+
     static bool flippy = true;
     SDL_Color color = {255, 255, 255};
     SDL_Surface *surface;
 
     for (int i = 0; i < 200; i++)
     {
-        step6502();
+        // If the stack is empty, then there is nowhere
+        // to return to.   On a "real" system it would return
+        // to a monitor or something.  We set a break flag and
+        // quit executing.
 
-        if (read6502(pc) == 0x00) {
+        if (read6502(pc) == OP_RTS && sp == 0xFF)
+        {
             printf("BREAK FLAG %04X\n", pc);
             break_flag = true;
+            break;
         }
+
+        step6502();
     }
 
 #if 0

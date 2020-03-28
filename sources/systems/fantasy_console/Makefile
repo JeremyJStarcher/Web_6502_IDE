@@ -42,7 +42,7 @@ run:
 	(cd ../../../; make run)
 
 rom:  
-	../../../bin/dasm asm/bios.asm -f2 -oasm/bios.rom
+	../../../bin/dasm asm/bios.asm -f2 -oasm/bios.rom -lasm/bios.lst
 
 EM_CFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 \
     --preload-file PixelOperatorMono.ttf@/ \

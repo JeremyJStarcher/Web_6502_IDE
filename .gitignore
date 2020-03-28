@@ -39,6 +39,7 @@ sources/systems/fantasy_console/ts/*.map
 sources/systems/fantasy_console/ts/*.js.map
 sources/systems/fantasy_console/ts/*.d.ts
 sources/systems/fantasy_console/asm/bios.rom
+sources/systems/fantasy_console/asm/bios.lst
 
 bin/dasm
 

@@ -191,9 +191,7 @@ RESET: subroutine
    ldy #0;
    ldx #0;
 
-   jsr  $0600  ; Start userland routines.
-   brk
-   nop	
+   jmp  $0600  ; Start userland routines.
 
 .loop
   jmp .loop
