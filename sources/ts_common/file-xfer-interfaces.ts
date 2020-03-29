@@ -1,3 +1,10 @@
+interface SendRomMessage {
+    action: "send-rom",
+    json: string;
+};
+
+//////////////////////////////////////
+
 interface BuildErrors {
     file: string;
     line: number;
@@ -41,12 +48,22 @@ interface ReadTextFileResponse extends BaseSendMessageResponse {
 }
 
 interface WriteTextFileRequest extends BaseSendMessageRequest {
-    action: 'writeFile';
+    action: 'writeTextFile';
     filename: string;
     contents: string;
 }
 
 interface WriteTextFileResponse extends BaseSendMessageResponse {
+
+}
+
+interface WriteBinaryFileRequest extends BaseSendMessageRequest {
+    action: 'writeBinaryFile';
+    filename: string;
+    contents: Uint8Array;
+}
+
+interface WriteBinaryFileResponse extends BaseSendMessageResponse {
 
 }
 
@@ -89,6 +106,7 @@ type BuildEvent = RunAssemblerRequest | RunAssemblerRequest2;
 
 type IOEvent =
     GetFileListRequest |
+    WriteBinaryFileRequest |
     ReadBinaryFileRequest |
     UnlinkFileRequest |
     WriteTextFileRequest |

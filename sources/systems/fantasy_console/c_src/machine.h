@@ -2,6 +2,7 @@
 #include <strings.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdbool.h>
 
 //6502 CPU registers
 extern uint16_t pc;
@@ -10,6 +11,9 @@ extern void reset6502(void);
 extern uint32_t clockticks6502;
 
 extern void step6502(void);
+
+extern bool cpu_halted;
+
 
 void js_step6502(uint16_t *buf, int len);
 uint8_t read6502(uint16_t address);

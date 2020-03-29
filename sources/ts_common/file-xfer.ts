@@ -116,9 +116,17 @@ const unlinkFileEvent = (request: UnlinkFileRequest) => {
     parent.postMessage(JSON.stringify(response), ORIGIN);
 };
 
-const writeFileEvent = (request: WriteTextFileRequest) => {
+const writeTextFile = (request: WriteTextFileRequest) => {
     FS.writeFile(request.filename, request.contents);
     const response: WriteTextFileResponse = {
+        messageID: request.messageID,
+    };
+    parent.postMessage(JSON.stringify(response), ORIGIN);
+};
+
+const writeBinaryFile = (request: WriteBinaryFileRequest) => {
+    FS.writeFile(request.filename, request.contents);
+    const response: WriteBinaryFileResponse = {
         messageID: request.messageID,
     };
     parent.postMessage(JSON.stringify(response), ORIGIN);
@@ -153,8 +161,11 @@ const ioEventListener = function (e: MessageEvent) {
         const request = JSON.parse(e.data) as IOEvent;
 
         switch (request.action) {
-            case "writeFile":
-                writeFileEvent(request);
+            case "writeTextFile":
+                writeTextFile(request);
+                break;
+            case "writeBinaryFile":
+                writeBinaryFile(request);
                 break;
             case "readTextFile":
                 readTextFileEvent(request);

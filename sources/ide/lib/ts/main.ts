@@ -1,3 +1,4 @@
+import { ORIGIN } from "./common/host-origin";
 import fileXfer from "./common/file-xfer";
 
 import route from "./route.js";
@@ -11,7 +12,7 @@ const loadFileButton = document.querySelector(".js-load-file-button") as HTMLBut
 const assembleOutput = document.querySelector("#assemble-output") as HTMLDivElement;
 const menuButton = document.querySelector(".js-show-menu") as HTMLButtonElement;
 
-let systemIframe: Window;
+let systemWindow: Window;
 
 const DASM_IFRAME_ID = "dasm-iframe";
 
@@ -85,7 +86,7 @@ const assemble = async (
 
 	const sendmessagereply = await fileXfer.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(assemblerWindow, {
 		messageID: 0,
-		action: 'writeFile',
+		action: 'writeTextFile',
 		filename: `${filename}.asm`,
 		contents: src,
 	});
@@ -102,10 +103,17 @@ const assemble = async (
 		filename: `${filename}`,
 	});
 
-	// TODO: Send the binary to the console
+	const errorLines = assembleResult.errors.map(e => e.line);
 
-	if (assembleResult.errors) {
-		const errorLines = assembleResult.errors.map(e => e.line);
+	if (errorLines.length === 0) {
+		const msg: SendRomMessage = {
+			action: "send-rom",
+			json: JSON.stringify(assembleResult.binary),
+		};
+
+		console.log(`Posting ${msg.action}`);
+        systemWindow.postMessage(JSON.stringify(msg), ORIGIN);
+	} else {
 		editor.setErrors(errorLines);
 
 		assembleOutput!.innerHTML = assembleResult.errors.map(l => {
@@ -241,7 +249,7 @@ const onCodeChange = () => {
 	editor.init(onCodeChange);
 	editor.setValue("; Placeholder\n; Placeholder");
 
-	systemIframe = await loadSystemIFrame("systems/fantasy-console/fc.html");
+	systemWindow = await loadSystemIFrame("systems/fantasy-console/fc.html");
 
 	wireButtons();
 

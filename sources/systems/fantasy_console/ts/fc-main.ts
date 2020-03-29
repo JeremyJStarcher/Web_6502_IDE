@@ -1,13 +1,16 @@
+declare const FS: any;
+declare const Module: any;
+
 import { scaleElement } from "./common/scale-element";
 
 // Don't use the resize event -- sometimes the canvas and iframe
 // is hidden and therefore has a size of 0.  The ResizeObserver
 // doesn't have universal support.
 const r = () => {
-    const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-    const { width, height } = (window.parent as any).GET_IFRAME_SIZE();
-    scaleElement(width, height, canvas);
-    setTimeout(r, 500);
+	const canvas = document.querySelector("canvas") as HTMLCanvasElement;
+	const { width, height } = (window.parent as any).GET_IFRAME_SIZE();
+	scaleElement(width, height, canvas);
+	setTimeout(r, 500);
 };
 r();
 
@@ -29,3 +32,16 @@ const CPU_SPEEDS = (() => {
 		}
 	});
 })();
+
+window.addEventListener('message', (e: MessageEvent) => {
+	const m = JSON.parse(e.data) as SendRomMessage;
+    const boot_machine = Module.cwrap('boot_machine', null, ['void']);
+
+	if (m.action === "send-rom") {
+		const bin = Uint8Array.from(JSON.parse(m.json));
+		FS.writeFile("/file.rom", bin);
+		boot_machine();
+		console.log(`Glory! Received new ROM of ${bin.length}`);
+	}
+}, false);
+

@@ -135,4 +135,5 @@ void boot_machine()
 	reset6502();
 	load_rom("/bios.rom");
 	load_rom("/file.rom");
+	cpu_halted = false;
 }

@@ -9,6 +9,8 @@
 
 #include "machine.h"
 
+bool cpu_halted = false;
+
 SDL_Window *window;
 SDL_Renderer *renderer;
 TTF_Font *font;
@@ -100,9 +102,8 @@ void drawRandomPixels()
 
 void mainloop()
 {
-    static bool break_flag = false;
 
-    if (break_flag)
+    if (cpu_halted)
     {
         return;
     }
@@ -120,8 +121,8 @@ void mainloop()
 
         if (read6502(pc) == OP_RTS && sp == 0xFF)
         {
-            printf("BREAK FLAG %04X\n", pc);
-            break_flag = true;
+            printf("CPU HALTED AT: %04X\n", pc);
+            cpu_halted = true;
             break;
         }
 
