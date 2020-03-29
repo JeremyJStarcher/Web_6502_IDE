@@ -11,13 +11,14 @@ const loadFileButton = document.querySelector(".js-load-file-button") as HTMLBut
 const assembleOutput = document.querySelector("#assemble-output") as HTMLDivElement;
 const menuButton = document.querySelector(".js-show-menu") as HTMLButtonElement;
 
+let systemIframe: Window;
+
 const DASM_IFRAME_ID = "dasm-iframe";
 
 const editorFlags = {
 	canAssemble: true,
 	canRun: false,
 };
-
 
 let rand = (minInclusive: number, maxInclusive: number) =>
 	minInclusive + (maxInclusive - minInclusive + 1)
@@ -58,26 +59,44 @@ const loadDasmIFrame = async () => {
 	return dasmIframe.contentWindow!;
 };
 
+const loadSystemIFrame = async (url: string) => {
+	const systemdiv = document.querySelector(".system") as HTMLDivElement;
+	if (systemdiv.firstChild) {
+		systemdiv.removeChild(systemdiv.firstChild);
+	}
+
+	const systemIframe = document.createElement("iframe");
+	systemIframe.id = "system-iframe";
+	systemIframe.src = url;
+
+	systemdiv.appendChild(systemIframe);
+
+	// await fileXfer.waitForPong();
+
+	return systemIframe.contentWindow!;
+};
+
+
 const assemble = async (
-	cw: any,
+	assemblerWindow: any,
 	filename: string,
 	src: string) => {
 	route.gotoSection("wait");
 
-	const sendmessagereply = await fileXfer.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(cw, {
+	const sendmessagereply = await fileXfer.sendMessage<WriteTextFileRequest, WriteTextFileResponse>(assemblerWindow, {
 		messageID: 0,
 		action: 'writeFile',
 		filename: `${filename}.asm`,
 		contents: src,
 	});
 
-	await fileXfer.sendMessage<UnlinkFileRequest, UnlinkFileResponse>(cw, {
+	await fileXfer.sendMessage<UnlinkFileRequest, UnlinkFileResponse>(assemblerWindow, {
 		messageID: 0,
 		action: 'unlinkFile',
 		filename: `${filename}.bin`,
 	});
 
-	const assembleResult = await fileXfer.sendMessage<RunAssemblerRequest, RunAssemblerResponse>(cw, {
+	const assembleResult = await fileXfer.sendMessage<RunAssemblerRequest, RunAssemblerResponse>(assemblerWindow, {
 		messageID: 0,
 		action: 'runAssembler',
 		filename: `${filename}`,
@@ -110,8 +129,8 @@ const wireButtons = () => {
 	let lineMappings;
 
 	const runAssemble = async (filename: string, src: string) => {
-		const cw = await loadDasmIFrame();
-		const assembleResult = await assemble(cw, filename, src);
+		const assemblerWindow = await loadDasmIFrame();
+		const assembleResult = await assemble(assemblerWindow, filename, src);
 		destroydasmIframe();
 
 		// console.log(assembleResult.listing);
@@ -222,6 +241,8 @@ const onCodeChange = () => {
 	editor.init(onCodeChange);
 	editor.setValue("; Placeholder\n; Placeholder");
 
+	systemIframe = await loadSystemIFrame("systems/fantasy-console/fc.html");
+
 	wireButtons();
 
 	route.onload();
@@ -232,9 +253,9 @@ const onCodeChange = () => {
 
 	loadFileButton.addEventListener("click", async () => {
 		route.gotoSection("filelist");
-		const cw = await loadDasmIFrame();
+		const assemberWindow = await loadDasmIFrame();
 
-		fileList.pickFile(cw, "/examples", async (file) => {
+		fileList.pickFile(assemberWindow, "/examples", async (file) => {
 			route.gotoSection("editor");
 			editor.setValue(file.contents);
 			destroydasmIframe();

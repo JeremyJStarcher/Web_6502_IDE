@@ -93,20 +93,12 @@ void bin_to_ram(unsigned char *stream, int bufz)
 	}
 }
 
-void boot_machine()
-{
-	// for (uint16_t i = 0; i <= 0xFFFF; i++)
-	// {
-	//    write6502(i, 0);
-	// }
-
-	reset6502();
-
-	FILE *f = fopen("/bios.rom", "rb");
+void load_rom(char *filename) {
+	FILE *f = fopen(filename, "rb");
 	if (f == NULL)
 	{
-		printf("Could not load BIOS file\n");
-		exit(1);
+		fprintf(stderr,"Could not open file: %s\n", filename);
+		return;
 	}
 
 	unsigned char *buffer;
@@ -131,4 +123,16 @@ void boot_machine()
 
 	bin_to_ram(buffer, fileLen);
 	free(buffer);
+}
+
+void boot_machine()
+{
+	// for (uint16_t i = 0; i <= 0xFFFF; i++)
+	// {
+	//    write6502(i, 0);
+	// }
+
+	reset6502();
+	load_rom("/bios.rom");
+	load_rom("/file.rom");
 }
