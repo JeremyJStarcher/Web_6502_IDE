@@ -37,22 +37,23 @@ MBUF_TO:    .word $0200
 CLEAR_BLOCK: subroutine
          LDY #0            ; Start off at offset #0
          LDX MBUF_SIZEH    ; The outer loop
-         BEQ .MD2
-.MD1     LDA MBUF_FROM 
-         STA (MBUF_TO),Y
-         INY
-         BNE .MD1
-         INC MBUF_TO+1
-         DEX
-         BNE .MD1
-.MD2     LDX MBUF_SIZEL
-         BEQ .MD4
-.MD3     LDA MBUF_FROM ; move the remaining bytes
-         STA (MBUF_TO),Y
-         INY
-         DEX
-         BNE .MD3
-.MD4     RTS
+         BEQ .MD2          ; If nothing left in the high byte check for remainders
+.MD1     LDA MBUF_FROM     ; Load the fill value
+         STA (MBUF_TO),Y   ; Fill memory
+         INY               ; Move to the next out location
+         BNE .MD1          ; Y didn't wrap around to zero? Loop
+         INC MBUF_TO+1     ; Move to the next "TO: page
+         DEX               ; DEC the outside loop (High byte)
+         BNE .MD1          ; High byte not zero? Repeat
+.MD2     LDX MBUF_SIZEL    ; Check for any part of a page
+         BEQ .MD4          ; X is zero? No partial page.
+.MD3                       ; move the remaining bytes
+         LDA MBUF_FROM     ; Get the fill value
+         STA (MBUF_TO),Y   ; save it
+         INY               ; INC to the next 'TO' value
+         DEX               ; DEC the straggler loop
+         BNE .MD3          ; X <> 0, still stragglers
+.MD4     RTS               ; Return
 
 ;-================================================================
 ; Reset routine, called as part of the; boot process.
