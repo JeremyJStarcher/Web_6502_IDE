@@ -68,6 +68,9 @@ scripts:
 
 obj: $(OBJS)
 
+pretty_asm:
+	find . -iname "*.asm" -exec ../../pretty6502/pretty6502 -a0 -mu -du -l  -p1  -s1 {} {} \;
+
 
 clean:
 	-rm -rf ${S}/*.o $(ALL) \

@@ -1,0 +1,50 @@
+Pretty6502 v0.5 by Oscar Toledo G. http://nanochess.org/
+
+Executables provided for Mac OS X and Windows.
+
+Usage:
+    pretty6502 [args] input.asm output.asm
+
+It's recommended to not use same output file as input,
+even if possible because there is a chance (0.0000001%)
+that you can DAMAGE YOUR SOURCE if Pretty6502 has
+undiscovered bugs.
+
+Arguments:
+    -s0       Code in four columns (default)
+              label: mnemonic operand comment
+    -s1       Code in three columns
+              label: mnemonic+operand comment
+
+    -p0       Processor unknown.
+    -p1       Processor 6502 + DASM syntax (default)
+    -p2       Processor Z80 + tniASM syntax
+    -p3       Processor CP1610 + as1600 syntax (Intellivision)
+    -p4       Processor TMS9900 + xas99 syntax (TI-99/4A)
+
+    -m8       Start of mnemonic column (default)
+    -o16      Start of operand column (default)
+    -c32      Start of comment column (default)
+
+    -t8       Use tabs of size 8 to reach column
+    -t0       Use spaces to align (default)
+
+    -a0       Align comments to nearest column
+    -a1       Comments at line start are aligned
+              to mnemonic (default)
+
+    -n4       Nesting spacing (can be any number
+              of spaces or multiple of tab size)
+
+    -l        Put labels in its own line
+
+    -dl       Change directives to lowercase
+    -du       Change directives to uppercase
+    -ml       Change mnemonics to lowercase
+    -mu       Change mnemonics to uppercase
+
+Assumes all your labels are at start of line and there is space
+before mnemonic.
+
+Accepts any assembler file where ; means comment
+[label] mnemonic [operand] ; comment
