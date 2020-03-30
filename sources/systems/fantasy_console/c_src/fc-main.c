@@ -28,7 +28,9 @@ const int BYTES_PER_PIXEL = 4;
 extern uint16_t pc;
 extern uint8_t sp, a, x, y, status;
 
+const uint8_t OP_BRK = 0x00;
 const uint8_t OP_RTS = 0x60;
+
 const uint16_t BASE_STACK = 0x0100;
 
 uint8_t palette[16][3] = {
@@ -100,6 +102,11 @@ void drawRandomPixels()
     SDL_FreeSurface(surface);
 }
 
+uint16_t readword(uint16_t address)
+{
+    return (uint16_t)read6502(address) | ((uint16_t)read6502(address + 1) << 8);
+}
+
 void mainloop()
 {
 
@@ -119,11 +126,23 @@ void mainloop()
         // to a monitor or something.  We set a break flag and
         // quit executing.
 
-        if (read6502(pc) == OP_RTS && sp == 0xFF)
+        uint8_t opcode = read6502(pc);
+
+        if (opcode == OP_RTS && sp == 0xFF)
         {
-            printf("CPU HALTED AT: %04X\n", pc);
+            printf("System halted at: $%04X\n", pc);
             cpu_halted = true;
             break;
+        }
+
+        if (opcode == OP_BRK)
+        {
+            uint16_t vsize = readword(0xA2);
+            uint16_t vto = readword(0xa4);
+            printf("size : %04X\n", vsize);
+            printf("to: %04X\n", vto);
+            printf("sp: %02X\n", sp);
+            printf("pc: %04X\n", pc);
         }
 
         step6502();

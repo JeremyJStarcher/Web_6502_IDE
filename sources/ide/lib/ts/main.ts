@@ -247,17 +247,24 @@ const onCodeChange = () => {
 
 (window as any).main_init = async () => {
 	editor.init(onCodeChange);
-	editor.setValue("; Placeholder\n; Placeholder");
+	editor.setValue(`
+	; Placeholder
+	  PROCESSOR 6502
+	  ORG $0600
+	  RTS
+	; Placeholder`);
 
 	systemWindow = await loadSystemIFrame("systems/fantasy-console/fc.html");
 
 	wireButtons();
 
 	route.onload();
+	route.gotoSection("editor");
 
 	menuButton.addEventListener("click", async () => {
 		route.gotoSection("main");
 	});
+
 
 	loadFileButton.addEventListener("click", async () => {
 		route.gotoSection("filelist");

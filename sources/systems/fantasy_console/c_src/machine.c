@@ -27,6 +27,11 @@ void write6502(uint16_t address, uint8_t value)
 	lastMode = 1;
 }
 
+void silentWrite6502(uint16_t address, uint8_t value)
+{
+	ram[address] = value;
+}
+
 void testrun()
 {
 	reset6502();
@@ -87,7 +92,7 @@ void bin_to_ram(unsigned char *stream, int bufz)
 			unsigned int offset = address + j;
 			unsigned int b = stream[i];
 
-			write6502(offset, b);
+			silentWrite6502(offset, b);
 			i += 1;
 		}
 	}
