@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 #include <emscripten.h>
 
@@ -236,6 +237,7 @@ int init_system()
         return 1;
     }
 
+    srand(time(NULL));
     boot_machine();
     reset6502();
 

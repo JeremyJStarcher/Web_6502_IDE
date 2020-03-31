@@ -14,9 +14,23 @@ static uint8_t lastMode;
 
 #define SYSMAGICADDRESS (0xFFF0)
 
+//generate number in range [min,max)
+int sys_random(int min, int max)
+{
+	int number = min + rand() % (max - min);
+	return number;
+}
+
 uint8_t read6502(uint16_t address)
 {
-	return ram[address];
+	if (address == 0x00FE)
+	{
+		return sys_random(0, 256);
+	}
+	else
+	{
+		return ram[address];
+	}
 }
 
 void write6502(uint16_t address, uint8_t value)
@@ -98,11 +112,12 @@ void bin_to_ram(unsigned char *stream, int bufz)
 	}
 }
 
-void load_rom(char *filename) {
+void load_rom(char *filename)
+{
 	FILE *f = fopen(filename, "rb");
 	if (f == NULL)
 	{
-		fprintf(stderr,"Could not open file: %s\n", filename);
+		fprintf(stderr, "Could not open file: %s\n", filename);
 		return;
 	}
 
