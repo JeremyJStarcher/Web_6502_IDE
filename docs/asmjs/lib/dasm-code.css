@@ -183,10 +183,26 @@ button[disabled] {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  grid-template-columns: minmax(auto,auto) 1fr 1fr 0;
+  grid-template-columns: minmax(auto,auto) 1fr 1fr 1fr;
   grid-template-rows: minmax(auto, auto) 1fr 1fr 12ex;
   /* grid-gap: 1rem; */
-  grid-template-areas: "header header header" "sidebar content-1 content-1" "w6502   content-1 content-1" "footer footer footer";
+  grid-template-areas:
+   "header   header    header     header"
+   "sidebar  content-1 content-1  system"
+   "w6502    content-1 content-1  system"
+   "footer   footer    footer     footer";
+}
+.system {
+  grid-area: system;
+  background-color: #8a2be2;
+  color: white;
+}
+
+.system iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  overflow: hidden;
 }
 
 .header {

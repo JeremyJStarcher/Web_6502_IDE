@@ -37,15 +37,6 @@
 				<div>
 					<button class="js-go-button">GO!</button>
 					<button class="js-compile-button">Assemble</button>
-					<button class="js-run-button">Run</button>
-					<button class="js-reset-button">Reset</button>
-					<button class="js-pause-button">Pause</button>
-					<button style="display: none" class="js-flicker-button">&#x25b6; Flicker</button>
-					<button class="js-step-button">Step</button>
-				</div>
-				<div>
-					<button class="js-show-code">Code</button>
-					<button class="js-show-graphics">Graphics</button>
 					<button class="js-show-menu">Menu</button>
 				</div>
 			</div>
@@ -74,8 +65,10 @@
 			</div>
 			<div class="content-1 editor-panel">
 				<textarea class="editor"></textarea>
-				<canvas class="graphics-out"></canvas>
 			</div>
+
+			<div class="system"></div>
+
 			<div class="footer">
 				<textarea style="display:none" class="emscripten" id="output" readonly></textarea>
 				<div id="assemble-output"></div>
@@ -187,6 +180,18 @@
 				if (text) Module.printErr('[post-exception status] ' + text);
 			};
 		};
+
+		window.GET_IFRAME_SIZE = () => {
+			const parent = document.querySelector(".system");
+			// The systems iframe needs this to calculate its size properly
+			const iframe = document.querySelector("#system-iframe");
+
+			iframe.width = parent.offsetWidth;
+			iframe.height = parent.offsetHeight;
+
+			const res = { width: iframe.offsetWidth, height: iframe.offsetHeight };
+			return res;
+		};
 	</script>
 
 	<section class="popup-container" data-section-id="wait">
@@ -220,7 +225,7 @@
 			<div class="button-row">
 				<button class="js-load-file-button">LOAD DEMO</button>
 				<button style="display: none">SAVE</button>
-				<button class="js-editor-button">EDIT</button>
+				<button class="js-edit-file-button">EDIT</button>
 			</div>
 			<div class="button-row">
 				<a href="about.html" target="_blank">About the 6502 IDE</a>
@@ -228,10 +233,10 @@
 		</div>
 	</section>
 
-	<script type="module" src="lib/main.js"></script>
+	<script type="module" src="lib/ts/main-bundle.js"></script>
 	<script src="v6502.js"></script>
 	<script src="lib/wasm-mode.js"></script>
-	<script src="lib/wasmdetect.js"></script>
+	<script src="lib/ts/wasmdetect.js"></script>
 </body>
 
 </html>
