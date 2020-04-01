@@ -35,7 +35,7 @@ const CPU_SPEEDS = (() => {
 
 window.addEventListener('message', (e: MessageEvent) => {
 	const m = JSON.parse(e.data) as SendRomMessage;
-    const boot_machine = Module.cwrap('boot_machine', null, ['void']);
+	const boot_machine = Module.cwrap('boot_machine', null, ['void']);
 
 	if (m.action === "send-rom") {
 		const bin = Uint8Array.from(JSON.parse(m.json));
@@ -45,3 +45,9 @@ window.addEventListener('message', (e: MessageEvent) => {
 	}
 }, false);
 
+window.addEventListener("keydown", (e: KeyboardEvent) => {
+	const write6502 = Module.cwrap('write6502', 'void', ['number', 'number']);
+	const ascii = e.key.charCodeAt(0)
+	console.log(ascii, e.key, e.keyCode);
+	write6502(0xFF, ascii);
+});

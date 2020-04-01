@@ -120,7 +120,7 @@ void mainloop()
     SDL_Color color = {255, 255, 255};
     SDL_Surface *surface;
 
-    for (int i = 0; i < 200; i++)
+    for (int i = 0; i < 20000; i++)
     {
         // If the stack is empty, then there is nowhere
         // to return to.   On a "real" system it would return

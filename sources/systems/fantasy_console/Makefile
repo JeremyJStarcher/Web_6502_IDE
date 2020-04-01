@@ -48,7 +48,7 @@ EM_CFLAGS=-s USE_SDL=2 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 \
     --preload-file PixelOperatorMono.ttf@/ \
 	-s INVOKE_RUN=0 \
 	-s NO_EXIT_RUNTIME=1 \
-	-s EXPORTED_FUNCTIONS="['_main', '_init_system', '_mainloop', '_boot_machine']" \
+	-s EXPORTED_FUNCTIONS="['_main', '_init_system', '_mainloop', '_boot_machine', '_write6502', '_read6502']" \
 	-s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']" \
 	--preload-file asm/bios.rom@/bios.rom
 
