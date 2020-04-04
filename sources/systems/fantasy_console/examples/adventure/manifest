@@ -1,0 +1,3 @@
+meta.entry=main.asm
+meta.description=Adventure! Defeat the bad guy!
+meta.build=dasm

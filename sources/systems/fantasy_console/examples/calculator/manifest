@@ -1,0 +1,3 @@
+meta.entry=main.asm
+meta.description=Simple integer calculator
+meta.build=dasm

@@ -1,0 +1,3 @@
+meta.entry=main.asm
+meta.description=Pixel goes back and forth.
+meta.build=dasm
