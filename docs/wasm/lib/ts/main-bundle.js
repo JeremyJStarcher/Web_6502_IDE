@@ -333,64 +333,92 @@ var editor = {
     jumpToLine: jumpToLine,
 };
 
+var TYPE_FILE$1 = 'F';
+var examples = [
+    "adventure",
+    "alive",
+    "backandforth",
+    "byterun",
+    "calculator",
+    "colors",
+    "compo-May07-1st",
+    "compo-May07-2nd",
+    "compo-May07-3rd",
+    "demoscene",
+    "disco",
+    "fullscreenlogo",
+    "gameoflife",
+    "noise",
+    "random",
+    "rle",
+    "rorshach",
+    "screenpatterns",
+    "selfmodify",
+    "sierpinski",
+    "skier",
+    "softsprites",
+    "spacer",
+    "splashscreen",
+    "starfield2d",
+    "triangles",
+    "zookeeper",
+];
+var getFileListEvent$1 = function (dir) {
+    var list = examples.map(function (file) {
+        var r = {
+            displayName: file,
+            name: file,
+            type: TYPE_FILE$1,
+            fullPath: "examples/" + file + "/main.asm",
+        };
+        return r;
+    });
+    return list;
+};
 var fileList = (function () {
-    var pickFile = function (cw, dir, callback) { return __awaiter(void 0, void 0, void 0, function () {
+    var pickFile = function (dir, callback) { return __awaiter(void 0, void 0, void 0, function () {
         var container, reply;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    container = document.querySelector(".filelist");
-                    container.innerHTML = "";
-                    return [4 /*yield*/, fileXfer.sendMessage(cw, {
-                            action: 'getFileList',
-                            dir: dir,
-                            messageID: 0,
-                        })];
-                case 1:
-                    reply = _a.sent();
-                    (reply.files || []).forEach(function (l) {
-                        var li = document.createElement("li");
-                        var a = document.createElement("a");
-                        var t = document.createTextNode(l.displayName);
-                        a.href = "#" + l.fullPath;
-                        a.appendChild(t);
-                        li.appendChild(a);
-                        li.classList.add("filelist-item");
-                        container.appendChild(li);
-                        a.addEventListener("click", function (event) { return __awaiter(void 0, void 0, void 0, function () {
-                            var target, thisname, d, selectedFileResult;
-                            var _a;
-                            return __generator(this, function (_b) {
-                                switch (_b.label) {
-                                    case 0:
-                                        event.preventDefault();
-                                        target = event === null || event === void 0 ? void 0 : event.target;
-                                        thisname = ((_a = target === null || target === void 0 ? void 0 : target.href) === null || _a === void 0 ? void 0 : _a.split("#")[1]) || "--";
-                                        if (!reply.files) return [3 /*break*/, 3];
-                                        d = reply.files.filter(function (a) { return a.fullPath === thisname; })[0];
-                                        if (!(d.type === fileXfer.TYPE_FILE)) return [3 /*break*/, 2];
-                                        return [4 /*yield*/, fileXfer.sendMessage(cw, {
-                                                action: 'readTextFile',
-                                                messageID: 0,
-                                                filename: thisname,
-                                            })];
-                                    case 1:
-                                        selectedFileResult = _b.sent();
+            container = document.querySelector(".filelist");
+            container.innerHTML = "";
+            reply = getFileListEvent$1();
+            (reply || []).forEach(function (l) {
+                var li = document.createElement("li");
+                var a = document.createElement("a");
+                var t = document.createTextNode(l.displayName);
+                a.href = "#" + l.fullPath;
+                a.appendChild(t);
+                li.appendChild(a);
+                li.classList.add("filelist-item");
+                container.appendChild(li);
+                a.addEventListener("click", function (event) { return __awaiter(void 0, void 0, void 0, function () {
+                    var target, thisname, d;
+                    var _a;
+                    return __generator(this, function (_b) {
+                        event.preventDefault();
+                        target = event === null || event === void 0 ? void 0 : event.target;
+                        thisname = ((_a = target === null || target === void 0 ? void 0 : target.href) === null || _a === void 0 ? void 0 : _a.split("#")[1]) || "--";
+                        if (reply) {
+                            d = reply.filter(function (a) { return a.fullPath === thisname; })[0];
+                            if (d.type === TYPE_FILE$1) {
+                                fetch(d.fullPath).then(function (src) {
+                                    src.text().then(function (code) {
                                         callback({
                                             filename: thisname,
-                                            contents: (selectedFileResult === null || selectedFileResult === void 0 ? void 0 : selectedFileResult.contents) || "",
+                                            contents: code,
                                         });
-                                        return [3 /*break*/, 3];
-                                    case 2:
-                                        pickFile(cw, thisname, callback);
-                                        _b.label = 3;
-                                    case 3: return [2 /*return*/];
-                                }
-                            });
-                        }); });
+                                    });
+                                });
+                            }
+                            else {
+                                pickFile(thisname, callback);
+                            }
+                        }
+                        return [2 /*return*/];
                     });
-                    return [2 /*return*/];
-            }
+                }); });
+            });
+            return [2 /*return*/];
         });
     }); };
     return {
@@ -624,24 +652,16 @@ window.main_init = function () { return __awaiter(void 0, void 0, void 0, functi
                     });
                 }); });
                 loadFileButton.addEventListener("click", function () { return __awaiter(void 0, void 0, void 0, function () {
-                    var assemberWindow;
                     return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                route.gotoSection("filelist");
-                                return [4 /*yield*/, loadDasmIFrame()];
-                            case 1:
-                                assemberWindow = _a.sent();
-                                fileList.pickFile(assemberWindow, "/examples", function (file) { return __awaiter(void 0, void 0, void 0, function () {
-                                    return __generator(this, function (_a) {
-                                        route.gotoSection("editor");
-                                        editor.setValue(file.contents);
-                                        destroydasmIframe();
-                                        return [2 /*return*/];
-                                    });
-                                }); });
+                        route.gotoSection("filelist");
+                        fileList.pickFile("/examples", function (file) { return __awaiter(void 0, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                route.gotoSection("editor");
+                                editor.setValue(file.contents);
                                 return [2 /*return*/];
-                        }
+                            });
+                        }); });
+                        return [2 /*return*/];
                     });
                 }); });
                 return [2 /*return*/];

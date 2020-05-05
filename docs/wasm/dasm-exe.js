@@ -118,8 +118,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
       function assert(check, msg) {
         if (!check) throw msg + new Error().stack;
       }
-  Module['FS_createPath']('/', 'examples', true, true);
-
+  
       function DataRequest(start, end, audio) {
         this.start = start;
         this.end = end;
@@ -194,7 +193,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     }
   
    }
-   loadPackage({"files": [{"start": 0, "audio": 0, "end": 17795, "filename": "/examples/calculator.asm"}, {"start": 17795, "audio": 0, "end": 18058, "filename": "/examples/noise.asm"}, {"start": 18058, "audio": 0, "end": 18246, "filename": "/examples/selfmodify.asm"}, {"start": 18246, "audio": 0, "end": 27543, "filename": "/examples/demoscene.asm"}, {"start": 27543, "audio": 0, "end": 29232, "filename": "/examples/screenpatterns.asm"}, {"start": 29232, "audio": 0, "end": 33002, "filename": "/examples/gameoflife.asm"}, {"start": 33002, "audio": 0, "end": 33219, "filename": "/examples/disco.asm"}, {"start": 33219, "audio": 0, "end": 33624, "filename": "/examples/sierpinski.asm"}, {"start": 33624, "audio": 0, "end": 36109, "filename": "/examples/rle.asm"}, {"start": 36109, "audio": 0, "end": 36500, "filename": "/examples/colors.asm"}, {"start": 36500, "audio": 0, "end": 40497, "filename": "/examples/zookeeper.asm"}, {"start": 40497, "audio": 0, "end": 47755, "filename": "/examples/compo-May07-1st.asm"}, {"start": 47755, "audio": 0, "end": 49680, "filename": "/examples/splashscreen.asm"}, {"start": 49680, "audio": 0, "end": 51965, "filename": "/examples/byterun.asm"}, {"start": 51965, "audio": 0, "end": 52296, "filename": "/examples/random.asm"}, {"start": 52296, "audio": 0, "end": 52759, "filename": "/examples/triangles.asm"}, {"start": 52759, "audio": 0, "end": 55880, "filename": "/examples/softsprites.asm"}, {"start": 55880, "audio": 0, "end": 62270, "filename": "/examples/compo-May07-3rd.asm"}, {"start": 62270, "audio": 0, "end": 64507, "filename": "/examples/compo-May07-2nd.asm"}, {"start": 64507, "audio": 0, "end": 64955, "filename": "/examples/starfield2d.asm"}, {"start": 64955, "audio": 0, "end": 66129, "filename": "/examples/backandforth.asm"}, {"start": 66129, "audio": 0, "end": 66877, "filename": "/examples/alive.asm"}, {"start": 66877, "audio": 0, "end": 70257, "filename": "/examples/spacer.asm"}, {"start": 70257, "audio": 0, "end": 73134, "filename": "/examples/fullscreenlogo.asm"}, {"start": 73134, "audio": 0, "end": 110502, "filename": "/examples/adventure.asm"}, {"start": 110502, "audio": 0, "end": 111736, "filename": "/examples/rorshach.asm"}, {"start": 111736, "audio": 0, "end": 120408, "filename": "/examples/skier.asm"}, {"start": 120408, "audio": 0, "end": 123948, "filename": "/bios.asm"}], "remote_package_size": 123948, "package_uuid": "786a08ef-b55c-470d-9ee6-8a08de246d42"});
+   loadPackage({"files": [{"start": 0, "audio": 0, "end": 3540, "filename": "/bios.asm"}], "remote_package_size": 3540, "package_uuid": "9a747795-7f29-42b5-a3d1-658c91b0f1f2"});
   
   })();
   

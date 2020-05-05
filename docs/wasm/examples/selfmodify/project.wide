@@ -1,0 +1,3 @@
+meta.entry=main.asm
+meta.description=Generic description
+meta.build=dasm

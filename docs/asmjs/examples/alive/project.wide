@@ -1,0 +1,3 @@
+meta.entry=main.asm
+meta.description=Colorful pixels crawl around the screen
+meta.build=dasm

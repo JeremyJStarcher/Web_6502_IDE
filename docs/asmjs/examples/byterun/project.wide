@@ -1,0 +1,3 @@
+meta.entry=main.asm
+meta.description=Byte run compression demo
+meta.build=dasm

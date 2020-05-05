@@ -193,7 +193,7 @@ var Module = typeof Module !== 'undefined' ? Module : {};
     }
   
    }
-   loadPackage({"files": [{"start": 0, "audio": 0, "end": 16972, "filename": "/PixelOperatorMono.ttf"}, {"start": 16972, "audio": 0, "end": 17091, "filename": "/bios.rom"}], "remote_package_size": 17091, "package_uuid": "60843c4b-7ced-4ccd-a40d-007c268a8f96"});
+   loadPackage({"files": [{"start": 0, "audio": 0, "end": 16972, "filename": "/PixelOperatorMono.ttf"}, {"start": 16972, "audio": 0, "end": 17091, "filename": "/bios.rom"}], "remote_package_size": 17091, "package_uuid": "5c12a9f3-81af-4a9c-b4fd-5892add5740f"});
   
   })();
   
