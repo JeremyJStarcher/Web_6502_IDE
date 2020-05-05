@@ -1,5 +1,6 @@
 dist/asmjs/
 dist/wasm/
+dist
 
 sources/ide/lib/ts/*.js
 sources/ide/lib/ts/*.map

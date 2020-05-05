@@ -56,6 +56,8 @@ build:
 	cp sources/v6502/v6502.*  ./${IDEST} 
 	mkdir -p ${IDEST}/systems/fantasy-console
 	cp -r sources/systems/fantasy_console/build/* ${IDEST}/systems/fantasy-console
+	mkdir -p ${IDEST}/examples
+	cp -r sources/ide/examples/fantasy/* ${IDEST}/examples
 	
 asmjs:	build
 wasm:	build

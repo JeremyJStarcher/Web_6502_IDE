@@ -1,26 +1,70 @@
-import fileXfer from "./common/file-xfer";
+const TYPE_FILE = 'F';
+const TYPE_DIR = 'D';
 
 interface PickFileResult {
     filename: string;
     contents: string;
 }
 
+const examples = [
+    "adventure",
+    "alive",
+    "backandforth",
+    "byterun",
+    "calculator",
+    "colors",
+    "compo-May07-1st",
+    "compo-May07-2nd",
+    "compo-May07-3rd",
+    "demoscene",
+    "disco",
+    "fullscreenlogo",
+    "gameoflife",
+    "noise",
+    "random",
+    "rle",
+    "rorshach",
+    "screenpatterns",
+    "selfmodify",
+    "sierpinski",
+    "skier",
+    "softsprites",
+    "spacer",
+    "splashscreen",
+    "starfield2d",
+    "triangles",
+    "zookeeper",
+];
+
+
+const getFileListEvent = (dir: string) => {
+
+    const list = examples.map((file) => {
+
+        const r: DirectoryList = {
+            displayName: file,
+            name: file,
+            type: TYPE_FILE,
+            fullPath: `examples/${file}/main.asm`,
+        };
+
+        return r;
+    });
+
+    return list;
+};
+
+
 export const fileList = (() => {
     const pickFile = async (
-        cw: Window,
         dir: string,
         callback: (s: PickFileResult) => void) => {
         const container = document.querySelector(".filelist") as HTMLElement;
         container.innerHTML = "";
 
-        const reply = await fileXfer.sendMessage<GetFileListRequest, GetFileListResponse>
-            (cw, {
-                action: 'getFileList',
-                dir: dir,
-                messageID: 0,
-            });
+        const reply = getFileListEvent(dir);
 
-        (reply.files || []).forEach((l) => {
+        (reply || []).forEach((l) => {
             const li = document.createElement("li");
             const a = document.createElement("a");
 
@@ -39,23 +83,21 @@ export const fileList = (() => {
 
                 const thisname = target?.href?.split("#")[1] || "--";
 
-                if (reply.files) {
-                    const d = reply.files.filter((a) => a.fullPath === thisname)[0];
+                if (reply) {
+                    const d = reply.filter((a) => a.fullPath === thisname)[0];
 
-                    if (d.type === fileXfer.TYPE_FILE) {
-
-                        const selectedFileResult = await fileXfer.sendMessage<ReadTextFileRequest, ReadTextFileResponse>(cw, {
-                            action: 'readTextFile',
-                            messageID: 0,
-                            filename: thisname,
+                    if (d.type === TYPE_FILE) {
+                        fetch(d.fullPath).then(src => {
+                            src.text().then(code => {
+                                callback({
+                                    filename: thisname,
+                                    contents: code,
+                                });
+                            });
                         });
 
-                        callback({
-                            filename: thisname,
-                            contents: selectedFileResult?.contents || "",
-                        });
                     } else {
-                        pickFile(cw, thisname, callback);
+                        pickFile(thisname, callback);
                     }
                 }
             });

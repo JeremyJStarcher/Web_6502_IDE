@@ -268,12 +268,10 @@ const onCodeChange = () => {
 
 	loadFileButton.addEventListener("click", async () => {
 		route.gotoSection("filelist");
-		const assemberWindow = await loadDasmIFrame();
 
-		fileList.pickFile(assemberWindow, "/examples", async (file) => {
+		fileList.pickFile("/examples", async (file) => {
 			route.gotoSection("editor");
 			editor.setValue(file.contents);
-			destroydasmIframe();
 		});
 	});
 };
